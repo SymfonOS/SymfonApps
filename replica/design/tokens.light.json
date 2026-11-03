@@ -1,0 +1,376 @@
+{
+  "_about": "Mini-IDEA design tokens, light theme. Same roles and pairs as tokens.json (dark); only colour values and shadows differ. Check: python3 contrast.py tokens.light.json",
+  "theme": "light",
+  "color": {
+    "bg": "#f3f4f6",
+    "surface": "#f7f8fa",
+    "surface-raised": "#ffffff",
+    "editor-bg": "#ffffff",
+    "gutter-bg": "#ffffff",
+    "hover": "#e8eaee",
+    "selection": "#d6e2fa",
+    "selection-inactive": "#e3e6eb",
+    "editor-selection": "#cfdcf7",
+    "editor-line": "#f4f6fa",
+    "border": "#dcdfe4",
+    "border-input": "#868d98",
+    "text": "#1b1e23",
+    "text-muted": "#59616c",
+    "text-disabled": "#8e949d",
+    "accent": "#2f5bd0",
+    "accent-hover": "#284fb8",
+    "on-accent": "#ffffff",
+    "focus-ring": "#3a66d9",
+    "link": "#2552c4",
+    "danger": "#c2353a",
+    "danger-bg": "#fbe9ea",
+    "success": "#237a43",
+    "success-bg": "#e5f4ea",
+    "warning": "#8a5f00",
+    "warning-bg": "#fbf1d9",
+    "info": "#2462b8",
+    "line-number": "#6b727d",
+    "line-number-active": "#2b2f36",
+    "breakpoint": "#d23f3f",
+    "vcs-added": "#3f9a5d",
+    "vcs-modified": "#4a7fd0",
+    "vcs-deleted": "#7d838c",
+    "vcs-added-text": "#1c6837",
+    "vcs-modified-text": "#1f4fa3",
+    "syntax-keyword": "#7a3fc4",
+    "syntax-string": "#226b27",
+    "syntax-number": "#a3530b",
+    "syntax-comment": "#626a76",
+    "syntax-type": "#0b6f86",
+    "syntax-function": "#7a5a00",
+    "syntax-annotation": "#8a6000",
+    "syntax-constant": "#a83a75",
+    "syntax-variable": "#1b1e23"
+  },
+  "pairs": [
+    [
+      "text",
+      "bg"
+    ],
+    [
+      "text",
+      "surface"
+    ],
+    [
+      "text",
+      "surface-raised"
+    ],
+    [
+      "text",
+      "editor-bg"
+    ],
+    [
+      "text",
+      "hover"
+    ],
+    [
+      "text",
+      "selection"
+    ],
+    [
+      "text",
+      "selection-inactive"
+    ],
+    [
+      "text",
+      "editor-selection"
+    ],
+    [
+      "text",
+      "editor-line"
+    ],
+    [
+      "text-muted",
+      "bg"
+    ],
+    [
+      "text-muted",
+      "surface"
+    ],
+    [
+      "text-muted",
+      "surface-raised"
+    ],
+    [
+      "text-muted",
+      "selection"
+    ],
+    [
+      "on-accent",
+      "accent"
+    ],
+    [
+      "on-accent",
+      "accent-hover"
+    ],
+    [
+      "link",
+      "surface"
+    ],
+    [
+      "link",
+      "surface-raised"
+    ],
+    [
+      "link",
+      "editor-bg"
+    ],
+    [
+      "danger",
+      "surface"
+    ],
+    [
+      "danger",
+      "danger-bg"
+    ],
+    [
+      "danger",
+      "editor-bg"
+    ],
+    [
+      "success",
+      "surface"
+    ],
+    [
+      "success",
+      "success-bg"
+    ],
+    [
+      "warning",
+      "surface"
+    ],
+    [
+      "warning",
+      "warning-bg"
+    ],
+    [
+      "warning",
+      "editor-bg"
+    ],
+    [
+      "info",
+      "surface"
+    ],
+    [
+      "info",
+      "editor-bg"
+    ],
+    [
+      "line-number",
+      "gutter-bg"
+    ],
+    [
+      "line-number-active",
+      "gutter-bg"
+    ],
+    [
+      "syntax-keyword",
+      "editor-bg"
+    ],
+    [
+      "syntax-string",
+      "editor-bg"
+    ],
+    [
+      "syntax-number",
+      "editor-bg"
+    ],
+    [
+      "syntax-comment",
+      "editor-bg"
+    ],
+    [
+      "syntax-type",
+      "editor-bg"
+    ],
+    [
+      "syntax-function",
+      "editor-bg"
+    ],
+    [
+      "syntax-annotation",
+      "editor-bg"
+    ],
+    [
+      "syntax-constant",
+      "editor-bg"
+    ],
+    [
+      "syntax-variable",
+      "editor-bg"
+    ],
+    [
+      "syntax-keyword",
+      "editor-selection"
+    ],
+    [
+      "syntax-string",
+      "editor-selection"
+    ],
+    [
+      "syntax-comment",
+      "editor-line"
+    ],
+    [
+      "border-input",
+      "surface",
+      "ui"
+    ],
+    [
+      "border-input",
+      "surface-raised",
+      "ui"
+    ],
+    [
+      "focus-ring",
+      "bg",
+      "ui"
+    ],
+    [
+      "focus-ring",
+      "surface",
+      "ui"
+    ],
+    [
+      "focus-ring",
+      "editor-bg",
+      "ui"
+    ],
+    [
+      "breakpoint",
+      "gutter-bg",
+      "ui"
+    ],
+    [
+      "vcs-added",
+      "gutter-bg",
+      "ui"
+    ],
+    [
+      "vcs-modified",
+      "gutter-bg",
+      "ui"
+    ],
+    [
+      "vcs-deleted",
+      "gutter-bg",
+      "ui"
+    ],
+    [
+      "vcs-modified-text",
+      "surface"
+    ],
+    [
+      "vcs-modified-text",
+      "selection"
+    ],
+    [
+      "vcs-added-text",
+      "surface"
+    ],
+    [
+      "vcs-added-text",
+      "selection"
+    ]
+  ],
+  "font": {
+    "sans": "Inter, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif",
+    "mono": "'IBM Plex Mono', 'Source Code Pro', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace"
+  },
+  "type": {
+    "2xs": {
+      "size": 11,
+      "line": 14,
+      "weight": 400
+    },
+    "xs": {
+      "size": 12,
+      "line": 16,
+      "weight": 400
+    },
+    "sm": {
+      "size": 13,
+      "line": 18,
+      "weight": 400
+    },
+    "base": {
+      "size": 14,
+      "line": 20,
+      "weight": 400
+    },
+    "lg": {
+      "size": 16,
+      "line": 22,
+      "weight": 600
+    },
+    "xl": {
+      "size": 20,
+      "line": 26,
+      "weight": 600
+    },
+    "display": {
+      "size": 28,
+      "line": 34,
+      "weight": 600
+    },
+    "code": {
+      "size": 13,
+      "line": 20,
+      "weight": 400
+    }
+  },
+  "space": [
+    0,
+    2,
+    4,
+    6,
+    8,
+    12,
+    16,
+    20,
+    24,
+    32,
+    48
+  ],
+  "size": {
+    "toolbar-h": 40,
+    "stripe-w": 40,
+    "tab-h": 34,
+    "statusbar-h": 24,
+    "row-h": 24,
+    "row-h-lg": 28,
+    "control-sm": 24,
+    "control-md": 28,
+    "control-lg": 32,
+    "icon": 16,
+    "icon-lg": 20,
+    "gutter-w-min": 48,
+    "toolwindow-w-default": 280,
+    "toolwindow-h-default": 240,
+    "popup-w-search": 680,
+    "dialog-w-settings": 960
+  },
+  "radius": {
+    "xs": 3,
+    "sm": 4,
+    "md": 6,
+    "lg": 10,
+    "pill": 999
+  },
+  "shadow": {
+    "pop": "0 8px 24px rgba(16,24,40,.16), 0 0 0 1px rgba(16,24,40,.06)",
+    "dialog": "0 16px 48px rgba(16,24,40,.22), 0 0 0 1px rgba(16,24,40,.06)",
+    "tooltip": "0 4px 12px rgba(16,24,40,.14)"
+  },
+  "motion": {
+    "fast": "80ms",
+    "base": "150ms",
+    "ease": "cubic-bezier(.2,.8,.2,1)",
+    "reduced": "0ms"
+  }
+}

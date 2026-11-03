@@ -1,0 +1,114 @@
+  AAA   13.00:1  text                     on bg                   
+  AAA   12.11:1  text                     on surface              
+  AAA   10.63:1  text                     on surface-raised       
+  AAA   12.56:1  text                     on editor-bg            
+  AAA   10.21:1  text                     on hover                
+  AAA    9.10:1  text                     on selection            
+  AAA   10.20:1  text                     on selection-inactive   
+  AAA    8.31:1  text                     on editor-selection     
+  AAA   11.39:1  text                     on editor-line          
+  AAA    7.04:1  text-muted               on bg                   
+  AA     6.56:1  text-muted               on surface              
+  AA     5.76:1  text-muted               on surface-raised       
+  AA     4.93:1  text-muted               on selection            
+  AA     5.14:1  on-accent                on accent               
+  AA     6.11:1  on-accent                on accent-hover         
+  AA     6.28:1  link                     on surface              
+  AA     5.51:1  link                     on surface-raised       
+  AA     6.51:1  link                     on editor-bg            
+  AA     5.82:1  danger                   on surface              
+  AA     5.36:1  danger                   on danger-bg            
+  AA     6.04:1  danger                   on editor-bg            
+  AAA    7.40:1  success                  on surface              
+  AA     6.33:1  success                  on success-bg           
+  AAA    8.17:1  warning                  on surface              
+  AA     6.65:1  warning                  on warning-bg           
+  AAA    8.48:1  warning                  on editor-bg            
+  AA     6.63:1  info                     on surface              
+  AA     6.87:1  info                     on editor-bg            
+  AA     4.88:1  line-number              on gutter-bg            
+  AAA    9.91:1  line-number-active       on gutter-bg            
+  AAA    7.76:1  syntax-keyword           on editor-bg            
+  AAA    8.53:1  syntax-string            on editor-bg            
+  AAA    8.15:1  syntax-number            on editor-bg            
+  AA     5.47:1  syntax-comment           on editor-bg            
+  AAA    8.43:1  syntax-type              on editor-bg            
+  AAA   10.63:1  syntax-function          on editor-bg            
+  AAA    8.18:1  syntax-annotation        on editor-bg            
+  AA     6.79:1  syntax-constant          on editor-bg            
+  AAA   12.56:1  syntax-variable          on editor-bg            
+  AA     5.13:1  syntax-keyword           on editor-selection     
+  AA     5.64:1  syntax-string            on editor-selection     
+  AA     4.96:1  syntax-comment           on editor-line          
+  PASS   3.63:1  border-input             on surface              ui
+  PASS   3.19:1  border-input             on surface-raised       ui
+  PASS   5.76:1  focus-ring               on bg                   ui
+  PASS   5.37:1  focus-ring               on surface              ui
+  PASS   5.57:1  focus-ring               on editor-bg            ui
+  PASS   4.49:1  breakpoint               on gutter-bg            ui
+  PASS   5.55:1  vcs-added                on gutter-bg            ui
+  PASS   4.95:1  vcs-modified             on gutter-bg            ui
+  PASS   5.02:1  vcs-deleted              on gutter-bg            ui
+  AAA    7.39:1  vcs-modified-text        on surface              
+  AA     5.56:1  vcs-modified-text        on selection            
+  AAA    8.58:1  vcs-added-text           on surface              
+  AA     6.45:1  vcs-added-text           on selection            
+
+  55 pairs, 0 failing AA
+  AAA   15.19:1  text                     on bg                   
+  AAA   15.73:1  text                     on surface              
+  AAA   16.71:1  text                     on surface-raised       
+  AAA   16.71:1  text                     on editor-bg            
+  AAA   13.87:1  text                     on hover                
+  AAA   12.83:1  text                     on selection            
+  AAA   13.36:1  text                     on selection-inactive   
+  AAA   12.12:1  text                     on editor-selection     
+  AAA   15.45:1  text                     on editor-line          
+  AA     5.69:1  text-muted               on bg                   
+  AA     5.90:1  text-muted               on surface              
+  AA     6.27:1  text-muted               on surface-raised       
+  AA     4.81:1  text-muted               on selection            
+  AA     5.95:1  on-accent                on accent               
+  AAA    7.24:1  on-accent                on accent-hover         
+  AA     6.41:1  link                     on surface              
+  AA     6.81:1  link                     on surface-raised       
+  AA     6.81:1  link                     on editor-bg            
+  AA     5.11:1  danger                   on surface              
+  AA     4.64:1  danger                   on danger-bg            
+  AA     5.43:1  danger                   on editor-bg            
+  AA     5.02:1  success                  on surface              
+  AA     4.69:1  success                  on success-bg           
+  AA     5.32:1  warning                  on surface              
+  AA     5.03:1  warning                  on warning-bg           
+  AA     5.65:1  warning                  on editor-bg            
+  AA     5.62:1  info                     on surface              
+  AA     5.98:1  info                     on editor-bg            
+  AA     4.85:1  line-number              on gutter-bg            
+  AAA   13.44:1  line-number-active       on gutter-bg            
+  AA     6.30:1  syntax-keyword           on editor-bg            
+  AA     6.56:1  syntax-string            on editor-bg            
+  AA     5.53:1  syntax-number            on editor-bg            
+  AA     5.47:1  syntax-comment           on editor-bg            
+  AA     5.78:1  syntax-type              on editor-bg            
+  AA     6.38:1  syntax-function          on editor-bg            
+  AA     5.59:1  syntax-annotation        on editor-bg            
+  AA     5.95:1  syntax-constant          on editor-bg            
+  AAA   16.71:1  syntax-variable          on editor-bg            
+  AA     4.57:1  syntax-keyword           on editor-selection     
+  AA     4.76:1  syntax-string            on editor-selection     
+  AA     5.05:1  syntax-comment           on editor-line          
+  PASS   3.15:1  border-input             on surface              ui
+  PASS   3.35:1  border-input             on surface-raised       ui
+  PASS   4.67:1  focus-ring               on bg                   ui
+  PASS   4.84:1  focus-ring               on surface              ui
+  PASS   5.14:1  focus-ring               on editor-bg            ui
+  PASS   4.64:1  breakpoint               on gutter-bg            ui
+  PASS   3.50:1  vcs-added                on gutter-bg            ui
+  PASS   4.01:1  vcs-modified             on gutter-bg            ui
+  PASS   3.82:1  vcs-deleted              on gutter-bg            ui
+  AAA    7.30:1  vcs-modified-text        on surface              
+  AA     5.96:1  vcs-modified-text        on selection            
+  AA     6.41:1  vcs-added-text           on surface              
+  AA     5.23:1  vcs-added-text           on selection            
+
+  55 pairs, 0 failing AA
