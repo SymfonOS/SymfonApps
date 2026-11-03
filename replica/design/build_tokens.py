@@ -88,7 +88,8 @@ def css(dark, light):
 def preset(tokens):
     colours = {k: "var(--color-%s)" % k for k in tokens["color"]}
     font_size = {k: ["var(--text-%s)" % k, {"lineHeight": "var(--leading-%s)" % k}] for k in tokens["type"]}
-    spacing = {str(i): "var(--space-%d)" % i for i in range(len(tokens["space"]))}
+    # Keys are the pixel values (p-12 = 12px), values point at the token variables.
+    spacing = {str(v): "var(--space-%d)" % i for i, v in enumerate(tokens["space"])}
     spacing.update({k: "var(--size-%s)" % k for k in tokens["size"]})
     radius = {k: "var(--radius-%s)" % k for k in tokens["radius"]}
     shadow = {k: "var(--shadow-%s)" % k for k in tokens["shadow"]}
@@ -97,6 +98,7 @@ def preset(tokens):
         "fontFamily": {"sans": "var(--font-sans)", "mono": "var(--font-mono)"},
         "fontSize": font_size,
         "spacing": spacing,
+        "maxWidth": {k: "var(--size-%s)" % k for k in tokens["size"]},
         "borderRadius": dict(radius, none="0"),
         "boxShadow": dict(shadow, none="none"),
         "transitionDuration": {"fast": "var(--motion-fast)", "base": "var(--motion-base)"},

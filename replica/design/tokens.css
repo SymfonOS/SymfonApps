@@ -101,6 +101,13 @@
   --size-toolwindow-h-default: 240px;
   --size-popup-w-search: 680px;
   --size-dialog-w-settings: 960px;
+  --size-sidebar-w: 220px;
+  --size-list-row-h-xl: 48px;
+  --size-tile: 32px;
+  --size-dialog-w-sm: 460px;
+  --size-tree-indent: 16px;
+  --size-tab-w-max: 240px;
+  --size-status-text-w-max: 320px;
   --radius-xs: 3px;
   --radius-sm: 4px;
   --radius-md: 6px;
