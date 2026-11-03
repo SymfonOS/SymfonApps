@@ -43,6 +43,8 @@ export class RunService {
     private db: Db,
     private projectRoot: (projectId: string) => string,
     private events: RunEvents,
+    /** Resolves a project-relative path with the same containment check as file reads. */
+    private resolveFile: (projectId: string, rel: string) => Promise<string>,
   ) {}
 
   list(projectId: string): RunConfiguration[] {
@@ -55,8 +57,7 @@ export class RunService {
   /** Temporary config for the class in a file, like clicking the run icon in the gutter. */
   async fromContext(projectId: string, filePath: string): Promise<RunConfiguration | null> {
     if (!filePath.endsWith('.java')) return null;
-    const root = this.projectRoot(projectId);
-    const source = await fsp.readFile(path.join(root, filePath), 'utf8');
+    const source = await fsp.readFile(await this.resolveFile(projectId, filePath), 'utf8');
     if (!MAIN_RE.test(source)) return null;
     const pkg = /^\s*package\s+([\w.]+)\s*;/m.exec(source)?.[1];
     const cls = path.basename(filePath, '.java');

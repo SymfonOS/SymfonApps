@@ -12,7 +12,10 @@
     "start": "npm run build && electron .",
     "typecheck": "tsc --noEmit -p tsconfig.json",
     "jdtls:download": "node scripts/download-jdtls.mjs",
-    "test:e2e": "npm run build && node --test --test-concurrency=1 tests/e2e/*.test.mjs"
+    "test:e2e": "npm run build && node --test --test-concurrency=1 tests/e2e/*.test.mjs",
+    "test:unit": "node scripts/build-tests.mjs && node --test out/unit/*.test.js",
+    "test": "npm run typecheck && npm run test:unit",
+    "seed": "node scripts/seed.mjs"
   },
   "devDependencies": {
     "@types/node": "^22.10.0",
@@ -20,7 +23,7 @@
     "@types/react-dom": "^19.0.0",
     "@vitejs/plugin-react": "^6.2.1",
     "autoprefixer": "^10.6.2",
-    "electron": "^38.8.6",
+    "electron": "^45.2.1",
     "esbuild": "^0.28.2",
     "playwright-core": "^1.63.0",
     "postcss": "^8.5.32",
@@ -38,5 +41,8 @@
     "vscode-jsonrpc": "^10.0.0",
     "zod": "^4.6.7",
     "zustand": "^5.0.16"
+  },
+  "overrides": {
+    "dompurify": "^3.4.17"
   }
 }

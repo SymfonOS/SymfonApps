@@ -6,7 +6,7 @@ not from any other IDE's code or assets. "Mini-IDEA" is a working name.
 
 ## Requirements
 
-- Node 22+
+- Node 22.13+ (for `node:sqlite`)
 - JDK 21+ (`java` and `javac` on the PATH, or `JAVA_HOME` set)
 
 ## Setup
@@ -29,10 +29,17 @@ On Linux as root (containers) Electron needs `--no-sandbox`: `npx electron --no-
 
 The full feature list and status is in `replica/features.csv`, the progress in `replica/build-log.md`.
 
+## Demo data
+
+```bash
+npm run seed   # three made-up projects in ./.seed
+MINI_IDEA_USER_DATA=./.seed/user-data npm start
+```
+
 ## Tests
 
 ```bash
-npm run typecheck
+npm test                       # typecheck + unit tests (migrations, access boundary, services)
 xvfb-run -a npm run test:e2e   # on Linux without a display; plain `npm run test:e2e` elsewhere
 ```
 
@@ -49,4 +56,4 @@ src/renderer/         React + Monaco UI, tokens from replica/design
 tests/e2e/            Playwright for Electron
 ```
 
-State lives in `<userData>/state.db` (schema: `replica/schema.sql`), language server logs in `<userData>/logs/`.
+State lives in `<userData>/state.db` (schema: `replica/schema.sql`, migrations in `src/main/db.ts`), language server logs in `<userData>/logs/`. Security notes: `replica/backend.md`.

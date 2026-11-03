@@ -1,7 +1,7 @@
 import { app, BrowserWindow, dialog, ipcMain, shell } from 'electron';
 import path from 'node:path';
 import { mkdirSync } from 'node:fs';
-import { z } from 'zod';
+import { schemas } from './schemas';
 import type { EventChannel, EventMap, InvokeChannel, InvokeMap } from '../shared/ipc';
 import { openDb } from './db';
 import { ProjectService } from './project';
@@ -16,31 +16,6 @@ let win: BrowserWindow | null = null;
 function emit<C extends EventChannel>(channel: C, payload: EventMap[C]): void {
   if (win && !win.isDestroyed()) win.webContents.send(channel, payload);
 }
-
-const id = z.string().min(1).max(200);
-const relPath = z.string().max(4096);
-const schemas: { [C in InvokeChannel]: z.ZodType<InvokeMap[C]['in']> } = {
-  'project.list': z.void(),
-  'project.pickFolder': z.void(),
-  'project.open': z.object({ path: z.string().min(1).max(4096) }),
-  'project.trust': z.object({ projectId: id }),
-  'project.remove': z.object({ projectId: id }),
-  'fs.readDir': z.object({ projectId: id, path: relPath }),
-  'fs.readFile': z.object({ projectId: id, path: relPath }),
-  'fs.writeFile': z.object({ projectId: id, path: relPath, content: z.string(), expectedMtime: z.number().nullable() }),
-  'editorState.load': z.object({ projectId: id }),
-  'editorState.save': z.object({
-    projectId: id,
-    tabs: z.array(z.object({ filePath: relPath, active: z.boolean(), viewState: z.unknown() })).max(200),
-  }),
-  'lsp.start': z.object({ projectId: id, languageId: z.literal('java') }),
-  'lsp.request': z.object({ sessionId: id, method: z.string().max(200), params: z.unknown() }),
-  'lsp.notify': z.object({ sessionId: id, method: z.string().max(200), params: z.unknown() }),
-  'runConfig.list': z.object({ projectId: id }),
-  'runConfig.fromContext': z.object({ projectId: id, filePath: relPath }),
-  'run.start': z.object({ configId: id }),
-  'run.stop': z.object({ sessionId: id }),
-} as never;
 
 function handle<C extends InvokeChannel>(channel: C, fn: (input: InvokeMap[C]['in']) => Promise<InvokeMap[C]['out']> | InvokeMap[C]['out']): void {
   ipcMain.handle(channel, async (event, raw) => {
@@ -66,7 +41,7 @@ async function main(): Promise<void> {
   const runs = new RunService(db, (pid) => projects.get(pid).rootPath, {
     output: (sessionId, stream, text) => emit('run.output', { sessionId, stream, text }),
     status: (session) => emit('run.status', session),
-  });
+  }, (pid, rel) => projects.resolveReal(pid, rel));
 
   const requireTrusted = (projectId: string) => {
     if (!projects.get(projectId).trusted) throw new Error('Projekt ist nicht vertrauenswürdig: Build und Ausführung sind gesperrt.');

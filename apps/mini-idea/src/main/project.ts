@@ -16,6 +16,8 @@ interface ProjectRow {
   last_opened_at: number | null;
 }
 
+const isInside = (root: string, p: string) => p === root || p.startsWith(root.endsWith(path.sep) ? root : root + path.sep);
+
 const toProject = (r: ProjectRow): Project => ({
   id: r.id,
   name: r.name,
@@ -75,16 +77,29 @@ export class ProjectService {
     this.db.prepare('delete from projects where id = ?').run(projectId);
   }
 
-  /** Absolute path inside the project root, or throws. */
+  /** Absolute path inside the project root, or throws. Checks the path as written. */
   resolve(projectId: string, rel: string): string {
     const root = this.get(projectId).rootPath;
     const abs = path.resolve(root, rel);
-    if (abs !== root && !abs.startsWith(root + path.sep)) throw new Error('path outside project');
+    if (!isInside(root, abs)) throw new Error('path outside project');
+    return abs;
+  }
+
+  /**
+   * Like resolve(), and also follows symlinks: a link inside the project that points
+   * outside it is refused, so the renderer can never read or write beyond the root.
+   * For a file that does not exist yet, its parent folder is checked.
+   */
+  async resolveReal(projectId: string, rel: string): Promise<string> {
+    const abs = this.resolve(projectId, rel);
+    const realRoot = await fsp.realpath(this.get(projectId).rootPath);
+    const target = await fsp.realpath(abs).catch(async () => path.join(await fsp.realpath(path.dirname(abs)), path.basename(abs)));
+    if (!isInside(realRoot, target)) throw new Error('path outside project (symlink)');
     return abs;
   }
 
   async readDir(projectId: string, rel: string): Promise<DirEntry[]> {
-    const abs = this.resolve(projectId, rel);
+    const abs = await this.resolveReal(projectId, rel);
     const entries = await fsp.readdir(abs, { withFileTypes: true });
     return entries
       .filter((e) => e.isDirectory() || e.isFile())
@@ -98,7 +113,7 @@ export class ProjectService {
   }
 
   async readFile(projectId: string, rel: string): Promise<FileContent> {
-    const abs = this.resolve(projectId, rel);
+    const abs = await this.resolveReal(projectId, rel);
     const stat = await fsp.stat(abs);
     if (stat.size > MAX_FILE_BYTES) throw new Error('file too large to open');
     const content = await fsp.readFile(abs, 'utf8');
@@ -107,7 +122,7 @@ export class ProjectService {
 
   /** Atomic save. If the file changed on disk since it was read, report a conflict instead of overwriting. */
   async writeFile(projectId: string, rel: string, content: string, expectedMtime: number | null) {
-    const abs = this.resolve(projectId, rel);
+    const abs = await this.resolveReal(projectId, rel);
     if (expectedMtime !== null) {
       const disk = await fsp.stat(abs).catch(() => null);
       if (disk && Math.abs(disk.mtimeMs - expectedMtime) > 1) return { conflict: true as const, diskMtime: disk.mtimeMs };

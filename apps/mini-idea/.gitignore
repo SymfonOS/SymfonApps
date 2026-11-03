@@ -2,3 +2,7 @@ node_modules/
 out/
 .jdtls/
 test-results/
+.seed/
+.env
+.env.*
+!.env.example
