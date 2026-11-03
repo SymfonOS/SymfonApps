@@ -12,6 +12,7 @@ import {
   type MessageConnection,
 } from 'vscode-jsonrpc/node';
 import type { LspStatus } from '../shared/ipc';
+import { JAVA_UTF8_FLAGS, javaEnv } from './java-env';
 
 interface Session {
   id: string;
@@ -102,6 +103,7 @@ export class LspHost {
       '-Declipse.product=org.eclipse.jdt.ls.core.product',
       '-Dlog.level=WARNING',
       '-Xmx1G',
+      ...JAVA_UTF8_FLAGS,
       '--add-modules=ALL-SYSTEM',
       '--add-opens', 'java.base/java.util=ALL-UNNAMED',
       '--add-opens', 'java.base/java.lang=ALL-UNNAMED',
@@ -111,6 +113,7 @@ export class LspHost {
     ];
     const proc = spawn(process.env.JAVA_HOME ? path.join(process.env.JAVA_HOME, 'bin', 'java') : 'java', args, {
       cwd: rootPath,
+      env: javaEnv(),
       stdio: ['pipe', 'pipe', 'pipe'],
     });
     // Server stderr goes to <userData>/logs/jdtls.log for "show log" and debugging.
@@ -200,7 +203,12 @@ export class LspHost {
         } catch {
           /* already gone */
         }
-        setTimeout(() => s.proc.kill('SIGKILL'), 1000).unref();
+        // Give it a moment to exit on its own, then make sure it is gone.
+        if (s.proc.exitCode === null && s.proc.signalCode === null) {
+          await Promise.race([new Promise((r) => s.proc.once('exit', r)), new Promise((r) => setTimeout(r, 1500))]);
+        }
+        if (s.proc.exitCode === null && s.proc.signalCode === null) s.proc.kill('SIGKILL');
+        s.conn.dispose();
       }),
     );
   }

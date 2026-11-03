@@ -25,5 +25,6 @@ export const schemas: { [C in InvokeChannel]: z.ZodType<InvokeMap[C]['in']> } = 
   'runConfig.fromContext': z.object({ projectId: id, filePath: relPath }),
   'run.start': z.object({ configId: id }),
   'run.stop': z.object({ sessionId: id }),
+  'app.quit': z.void(),
 } as never;
 

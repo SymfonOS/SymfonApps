@@ -73,6 +73,8 @@ export interface InvokeMap {
   'runConfig.fromContext': { in: { projectId: string; filePath: string }; out: RunConfiguration | null };
   'run.start': { in: { configId: string }; out: RunSession };
   'run.stop': { in: { sessionId: string }; out: void };
+  /** The renderer agreed to close (nothing unsaved, or the user decided). */
+  'app.quit': { in: void; out: void };
 }
 
 export interface EventMap {
@@ -81,6 +83,8 @@ export interface EventMap {
   'lsp.status': { sessionId: string; status: LspStatus; message?: string };
   'run.output': { sessionId: string; stream: 'stdout' | 'stderr' | 'system'; text: string };
   'run.status': RunSession;
+  /** The user asked to close the window; the renderer decides about unsaved files. */
+  'app.closeRequested': Record<string, never>;
 }
 
 export type InvokeChannel = keyof InvokeMap;
@@ -91,11 +95,11 @@ export const INVOKE_CHANNELS = [
   'fs.readDir', 'fs.readFile', 'fs.writeFile',
   'editorState.load', 'editorState.save',
   'lsp.start', 'lsp.request', 'lsp.notify',
-  'runConfig.list', 'runConfig.fromContext', 'run.start', 'run.stop',
+  'runConfig.list', 'runConfig.fromContext', 'run.start', 'run.stop', 'app.quit',
 ] as const satisfies readonly InvokeChannel[];
 
 export const EVENT_CHANNELS = [
-  'fs.changed', 'lsp.notification', 'lsp.status', 'run.output', 'run.status',
+  'fs.changed', 'lsp.notification', 'lsp.status', 'run.output', 'run.status', 'app.closeRequested',
 ] as const satisfies readonly EventChannel[];
 
 export interface IdeApi {

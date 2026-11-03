@@ -37,7 +37,7 @@ export function Welcome() {
   return (
     <div className="flex h-full">
       <nav aria-label="Willkommen" className="w-sidebar-w border-r border-border bg-surface p-12">
-        <div className="mb-16 px-8 text-lg font-semibold">Mini-IDEA</div>
+        <h1 className="mb-16 px-8 text-lg font-semibold">Mini-IDEA</h1>
         <div className="flex h-row-h-lg items-center rounded-sm bg-selection px-8">Projekte</div>
       </nav>
       <main className="flex min-w-0 flex-1 flex-col gap-12 p-24">
@@ -76,6 +76,7 @@ export function Welcome() {
           <ul
             role="listbox"
             aria-label="Zuletzt geöffnete Projekte"
+            aria-keyshortcuts="Enter Delete"
             tabIndex={0}
             aria-activedescendant={shown[selected] ? `recent-${shown[selected].id}` : undefined}
             className="focus-inset flex flex-col overflow-auto rounded-sm"
@@ -89,35 +90,37 @@ export function Welcome() {
             }}
           >
             {shown.map((p, i) => (
-              <li
-                key={p.id}
-                id={`recent-${p.id}`}
-                role="option"
-                aria-selected={i === selected}
-                className={`group flex h-list-row-h-xl cursor-default items-center gap-12 rounded-sm px-8 ${i === selected ? 'bg-selection' : 'hover:bg-hover'}`}
-                onClick={() => setSelected(i)}
-                onDoubleClick={() => void openProject(p.rootPath)}
-              >
-                <span
-                  aria-hidden
-                  className="grid h-tile w-tile flex-none place-items-center rounded-md text-xs font-semibold text-bg"
-                  style={{ background: `var(--color-${TILE[tileHue(p.name)]})` }}
+              // Remove is a mouse shortcut beside the option (Delete key for keyboard); a button
+              // inside role=option is unreachable for screen readers (BUG-008).
+              <li key={p.id} role="none" className="group relative">
+                <div
+                  id={`recent-${p.id}`}
+                  role="option"
+                  aria-selected={i === selected}
+                  className={`flex h-list-row-h-xl cursor-default items-center gap-12 rounded-sm px-8 ${i === selected ? 'bg-selection' : 'hover:bg-hover'}`}
+                  onClick={() => setSelected(i)}
+                  onDoubleClick={() => void openProject(p.rootPath)}
                 >
-                  {p.name.slice(0, 2).toUpperCase()}
-                </span>
-                <span className="min-w-0 flex-1">
-                  <span className="block truncate font-semibold">{p.name}</span>
-                  <span className="block truncate text-xs text-text-muted">{p.rootPath}</span>
-                </span>
+                  <span
+                    aria-hidden
+                    className="grid h-tile w-tile flex-none place-items-center rounded-md text-xs font-semibold text-bg"
+                    style={{ background: `var(--color-${TILE[tileHue(p.name)]})` }}
+                  >
+                    {p.name.slice(0, 2).toUpperCase()}
+                  </span>
+                  <span className="min-w-0 flex-1">
+                    <span className="block truncate font-semibold">{p.name}</span>
+                    <span className="block truncate text-xs text-text-muted">{p.rootPath}</span>
+                  </span>
+                </div>
                 <button
-                  aria-label={`${p.name} aus der Liste entfernen`}
-                  className="invisible grid h-control-sm w-control-sm place-items-center rounded-sm text-text-muted hover:bg-hover group-hover:visible"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    void remove(p);
-                  }}
+                  aria-hidden
+                  tabIndex={-1}
+                  title={`${p.name} aus der Liste entfernen`}
+                  className="invisible absolute right-8 top-12 grid h-control-sm w-control-sm place-items-center rounded-sm text-text-muted hover:bg-hover group-hover:visible"
+                  onClick={() => void remove(p)}
                 >
-                  <X size={14} aria-hidden />
+                  <X size={14} />
                 </button>
               </li>
             ))}

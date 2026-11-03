@@ -3,7 +3,7 @@ import { FileCode, X } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { monaco, applyTheme } from '../monaco';
 import { useIde } from '../store';
-import { closeFile, getModel, persistEditorState, runFile, saveFile, takeRevealRequest } from '../actions';
+import { closeFile, getModel, persistEditorState, registerEditorFocus, runFile, saveFile, takeRevealRequest } from '../actions';
 import { Kbd } from './ui';
 
 const MAIN_RE = /\bpublic\s+static\s+void\s+main\s*\(/;
@@ -11,6 +11,7 @@ const MAIN_RE = /\bpublic\s+static\s+void\s+main\s*\(/;
 export function EditorArea() {
   const tabs = useIde((s) => s.tabs);
   const activePath = useIde((s) => s.activePath);
+  const revealNonce = useIde((s) => s.revealNonce);
   const host = useRef<HTMLDivElement>(null);
   const editorRef = useRef<monaco.editor.IStandaloneCodeEditor | null>(null);
   const viewStates = useRef(new Map<string, monaco.editor.ICodeEditorViewState | null>());
@@ -65,7 +66,11 @@ export function EditorArea() {
     };
     editor.onDidChangeModel(updateGlyphs);
     editor.onDidChangeModelContent(updateGlyphs);
-    return () => editor.dispose();
+    registerEditorFocus(() => editor.focus());
+    return () => {
+      registerEditorFocus(null);
+      editor.dispose();
+    };
   }, []);
 
   // Switch model when the active tab changes.
@@ -103,7 +108,7 @@ export function EditorArea() {
     return () => {
       cancelled = true;
     };
-  }, [activePath]);
+  }, [activePath, revealNonce]);
 
   useEffect(() => {
     persistEditorState();
@@ -126,31 +131,40 @@ export function EditorArea() {
             const active = t.path === activePath;
             const name = t.path.split('/').pop();
             return (
+              // The close button is a mouse shortcut next to the tab, hidden from assistive tech:
+              // a button inside role=tab is not reachable for screen readers (BUG-008).
+              // Keyboard: Ctrl+F4 closes the active tab. Unsaved state is part of the tab's name.
               <div
                 key={t.path}
-                role="tab"
-                aria-selected={active}
-                tabIndex={active ? 0 : -1}
-                title={t.path}
-                onClick={() => useIde.getState().set({ activePath: t.path })}
+                role="none"
                 onAuxClick={(e) => e.button === 1 && closeFile(t.path)}
-                className={`group flex max-w-tab-w-max flex-none cursor-default items-center gap-6 border-r border-border pl-12 pr-6 ${active ? 'bg-editor-bg text-text shadow-[inset_0_-2px_0_var(--color-accent)]' : 'text-text-muted hover:bg-hover'}`}
+                className={`group flex max-w-tab-w-max flex-none items-center border-r border-border pr-6 ${active ? 'bg-editor-bg text-text shadow-[inset_0_-2px_0_var(--color-accent)]' : 'text-text-muted hover:bg-hover'}`}
               >
-                <FileCode size={16} aria-hidden className="flex-none" />
-                <span className="truncate">{name}</span>
+                <div
+                  role="tab"
+                  aria-selected={active}
+                  aria-label={t.dirty ? `${name} (ungespeichert)` : name}
+                  aria-keyshortcuts="Control+F4"
+                  tabIndex={active ? 0 : -1}
+                  title={t.path}
+                  onClick={() => useIde.getState().set({ activePath: t.path })}
+                  className="flex h-full min-w-0 cursor-default items-center gap-6 pl-12 pr-4"
+                >
+                  <FileCode size={16} aria-hidden className="flex-none" />
+                  <span className="truncate">{name}</span>
+                </div>
                 <button
-                  aria-label={t.dirty ? `${name} schließen (ungespeichert)` : `${name} schließen`}
+                  aria-hidden
                   tabIndex={-1}
+                  title={`${name} schließen`}
                   onClick={(e) => {
                     e.stopPropagation();
                     closeFile(t.path);
                   }}
                   className="grid h-icon-lg w-icon-lg flex-none place-items-center rounded-xs hover:bg-hover"
                 >
-                  {t.dirty ? (
-                    <span aria-hidden className="h-6 w-6 rounded-pill bg-text-muted group-hover:hidden" />
-                  ) : null}
-                  <X size={12} aria-hidden className={t.dirty ? 'hidden group-hover:block' : active ? '' : 'invisible group-hover:visible'} />
+                  {t.dirty ? <span className="h-6 w-6 rounded-pill bg-text-muted group-hover:hidden" /> : null}
+                  <X size={12} className={t.dirty ? 'hidden group-hover:block' : active ? '' : 'invisible group-hover:visible'} />
                 </button>
               </div>
             );

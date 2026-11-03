@@ -5,6 +5,7 @@ import { promises as fsp } from 'node:fs';
 import path from 'node:path';
 import type { RunConfiguration, RunSession, RunStatus } from '../shared/ipc';
 import { newId, now, type Db } from './db';
+import { JAVA_UTF8_FLAGS, javaEnv } from './java-env';
 
 interface ConfigRow {
   id: string;
@@ -122,13 +123,13 @@ export class RunService {
     await fsp.mkdir(outDir, { recursive: true });
 
     this.events.output(sid, 'system', `javac (${sources.length} Dateien)\n`);
-    const javacCode = await this.spawnStreaming(entry, 'javac', ['-d', outDir, '-g', ...sources], root);
+    const javacCode = await this.spawnStreaming(entry, 'javac', ['-encoding', 'UTF-8', '-d', outDir, '-g', ...sources], root);
     if (entry.killed) return this.finish(entry, 'killed', null);
     if (javacCode !== 0) {
       this.events.output(sid, 'system', `\nKompilieren fehlgeschlagen (Code ${javacCode}).\n`);
       return this.finish(entry, 'failed', javacCode);
     }
-    const args = [...splitArgs(config.vmOptions), '-cp', outDir, config.options.mainClass, ...splitArgs(config.args)];
+    const args = [...JAVA_UTF8_FLAGS, ...splitArgs(config.vmOptions), '-cp', outDir, config.options.mainClass, ...splitArgs(config.args)];
     this.events.output(sid, 'system', `java ${config.options.mainClass}\n`);
     this.setStatus(entry, 'running');
     const code = await this.spawnStreaming(entry, 'java', args, root);
@@ -140,7 +141,7 @@ export class RunService {
   private spawnStreaming(entry: { proc: ChildProcess | null; session: RunSession }, cmd: string, args: string[], cwd: string): Promise<number> {
     return new Promise((resolve) => {
       // JAVA_TOOL_OPTIONS makes the JVM print a banner to stderr; keep the user's env otherwise.
-      const env = { ...process.env };
+      const env = javaEnv();
       delete env.JAVA_TOOL_OPTIONS;
       const proc = spawn(cmd, args, { cwd, env, stdio: ['pipe', 'pipe', 'pipe'] });
       entry.proc = proc;

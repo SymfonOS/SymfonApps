@@ -66,3 +66,14 @@ test('every IPC channel rejects malformed input', () => {
   assert.doesNotThrow(() => schemas['fs.readFile'].parse({ projectId: 'p', path: 'src/A.java' }));
   assert.doesNotThrow(() => schemas['project.list'].parse(undefined));
 });
+
+test('javaEnv adds a UTF-8 locale only when the app has none (BUG-003/004)', async () => {
+  const { javaEnv, hasUtf8Locale } = await import('../../src/main/java-env');
+  assert.equal(javaEnv({ PATH: '/bin' }, 'linux').LC_ALL, 'C.UTF-8');
+  assert.equal(javaEnv({ LANG: 'POSIX' }, 'linux').LC_ALL, 'C.UTF-8');
+  assert.equal(javaEnv({}, 'darwin').LC_CTYPE, 'UTF-8');
+  assert.equal(javaEnv({ LANG: 'de_DE.UTF-8' }, 'linux').LC_ALL, undefined, 'keep the user locale');
+  assert.equal(javaEnv({ LC_ALL: 'C', LANG: 'de_DE.UTF-8' }, 'linux').LC_ALL, 'C.UTF-8', 'LC_ALL=C wins over LANG');
+  assert.equal(javaEnv({}, 'win32').LC_ALL, undefined);
+  assert.equal(hasUtf8Locale({ LC_CTYPE: 'en_US.utf8' }), true);
+});

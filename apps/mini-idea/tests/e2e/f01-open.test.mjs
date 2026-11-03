@@ -1,7 +1,8 @@
 // F01 Open an existing project (and the welcome / trust screens around it).
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { mkdirSync, rmSync, writeFileSync } from 'node:fs';
+import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { assertNoErrors, axe, editorText, fixture, launch, openFileInTree, openProject, waitForJava } from './helpers.mjs';
 
@@ -119,5 +120,27 @@ test('F01-N1 a recent project whose folder is gone shows an error, no crash', { 
   } finally {
     await s.close();
     fx.cleanup();
+  }
+});
+
+test('F01-N3 a broken language server shows an error in the status bar instead of nothing', { timeout: 90_000 }, async () => {
+  const fx = fixture();
+  // A JDT LS folder whose launcher is not a real jar: java exits at once, every time.
+  const broken = mkdtempSync(path.join(tmpdir(), 'mini-idea-broken-jdtls-'));
+  mkdirSync(path.join(broken, 'plugins'));
+  mkdirSync(path.join(broken, 'config_linux'));
+  writeFileSync(path.join(broken, 'plugins', 'org.eclipse.equinox.launcher_9.9.9.jar'), 'not a jar');
+  const s = await launch({ pick: fx.dir, env: { MINI_IDEA_JDTLS: broken } });
+  try {
+    await openProject(s.page);
+    await s.page.getByRole('status').filter({ hasText: 'Java-Server: Fehler' }).waitFor({ timeout: 30_000 });
+    // ...and it stays visible after the restarts give up
+    await s.page.waitForTimeout(12_000);
+    await s.page.getByRole('status').filter({ hasText: 'Java-Server: Fehler' }).waitFor({ timeout: 1000 });
+    assertNoErrors(assert, s.errors);
+  } finally {
+    await s.close();
+    fx.cleanup();
+    rmSync(broken, { recursive: true, force: true });
   }
 });

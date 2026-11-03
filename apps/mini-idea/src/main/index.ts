@@ -12,6 +12,8 @@ import { RunService } from './run';
 if (process.env.MINI_IDEA_USER_DATA) app.setPath('userData', process.env.MINI_IDEA_USER_DATA);
 
 let win: BrowserWindow | null = null;
+/** Set once the renderer has dealt with unsaved files (or cannot answer any more). */
+let allowClose = false;
 
 function emit<C extends EventChannel>(channel: C, payload: EventMap[C]): void {
   if (win && !win.isDestroyed()) win.webContents.send(channel, payload);
@@ -76,6 +78,10 @@ async function main(): Promise<void> {
     return runs.start(configId);
   });
   handle('run.stop', ({ sessionId }) => runs.stop(sessionId));
+  handle('app.quit', () => {
+    allowClose = true;
+    setImmediate(() => win?.close());
+  });
 
   win = new BrowserWindow({
     width: 1440,
@@ -93,6 +99,15 @@ async function main(): Promise<void> {
     },
   });
   win.once('ready-to-show', () => win?.show());
+  // Closing asks the renderer first, so unsaved edits are never dropped silently (BUG-002).
+  win.on('close', (e) => {
+    if (allowClose || !win || win.webContents.isDestroyed() || win.webContents.isCrashed()) return;
+    e.preventDefault();
+    emit('app.closeRequested', {});
+  });
+  win.webContents.on('render-process-gone', () => {
+    allowClose = true;
+  });
   // Links open in the system browser, never inside the app.
   win.webContents.setWindowOpenHandler(({ url }) => {
     if (/^https?:/.test(url)) void shell.openExternal(url);
@@ -101,10 +116,18 @@ async function main(): Promise<void> {
   win.webContents.on('will-navigate', (e) => e.preventDefault());
   await win.loadFile(path.join(__dirname, '../renderer/index.html'));
 
-  app.on('before-quit', () => {
+  // Quit waits (at most ~3 s) for the language servers to shut down, so no JVM outlives the app.
+  let shutDown = false;
+  app.on('before-quit', (e) => {
+    if (shutDown) return;
+    e.preventDefault();
+    shutDown = true;
     runs.dispose();
     projects.dispose();
-    void lsp.dispose();
+    void lsp.dispose().finally(() => {
+      db.close();
+      app.quit();
+    });
   });
 }
 

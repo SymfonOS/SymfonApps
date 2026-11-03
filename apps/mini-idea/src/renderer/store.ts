@@ -19,6 +19,8 @@ interface State {
   trustPrompt: Project | null;
   tabs: Tab[];
   activePath: string | null;
+  /** Bumped for every "go to line" request, so the editor reveals even if the tab is already active. */
+  revealNonce: number;
   caret: { line: number; column: number } | null;
   lspStatus: LspStatus;
   lspMessage: string | null;
@@ -43,6 +45,7 @@ export const useIde = create<State>((set) => ({
   trustPrompt: null,
   tabs: [],
   activePath: null,
+  revealNonce: 0,
   caret: null,
   lspStatus: 'off',
   lspMessage: null,

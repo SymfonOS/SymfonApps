@@ -88,7 +88,7 @@ test('vertical slice: open, trust, complete, diagnose, navigate, run', { timeout
     // Remove the line again and save; dirty marker goes away
     await page.keyboard.press('Control+Shift+K'); // delete line
     await page.keyboard.press('Control+S');
-    await page.getByRole('button', { name: 'Main.java schließen', exact: true }).waitFor();
+    await page.getByRole('tab', { name: 'Main.java', exact: true }).waitFor();
     await page.getByLabel(/[1-9]\d* Fehler/).waitFor({ state: 'detached', timeout: 60_000 });
 
     // F07: go to definition (F12 on "Greeter") opens Greeter.java

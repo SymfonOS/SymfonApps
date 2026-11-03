@@ -1,6 +1,7 @@
 // F04 Find a file and edit it (tree today; Search Everywhere is not built yet).
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
+import { execSync } from 'node:child_process';
 import { readFileSync, utimesSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
 import { assertNoErrors, editorText, fixture, launch, openFileInTree, openProject } from './helpers.mjs';
@@ -20,9 +21,9 @@ test('F04-H1 edit and save with Ctrl+S writes the file and clears the dirty mark
     await openMain(s);
     await s.page.keyboard.press('Control+End');
     await s.page.keyboard.type('// Grüße 🚀 äöü');
-    await s.page.getByRole('button', { name: 'Main.java schließen (ungespeichert)' }).waitFor();
+    await s.page.getByRole('tab', { name: 'Main.java (ungespeichert)' }).waitFor();
     await s.page.keyboard.press('Control+S');
-    await s.page.getByRole('button', { name: 'Main.java schließen', exact: true }).waitFor();
+    await s.page.getByRole('tab', { name: 'Main.java', exact: true }).waitFor();
     assert.match(readFileSync(path.join(fx.dir, MAIN), 'utf8'), /\/\/ Grüße 🚀 äöü$/);
     assertNoErrors(assert, s.errors);
   } finally {
@@ -38,7 +39,7 @@ test('F04-E1 closing a tab with unsaved changes asks first; cancel keeps the tab
     await openMain(s);
     await s.page.keyboard.type('x');
     s.page.once('dialog', (d) => d.dismiss());
-    await s.page.getByRole('button', { name: 'Main.java schließen (ungespeichert)' }).click();
+    await s.page.getByTitle('Main.java schließen').click();
     await s.page.getByRole('tab', { name: /Main\.java/ }).waitFor();
     assertNoErrors(assert, s.errors);
   } finally {
@@ -76,7 +77,7 @@ test('F04-E3 saving over an external change asks; cancel keeps the disk version'
     await s.page.keyboard.press('Control+S');
     assert.match(await dialog, /außerhalb von Mini-IDEA geändert/);
     assert.equal(readFileSync(file, 'utf8'), '// theirs\n');
-    await s.page.getByRole('button', { name: 'Main.java schließen (ungespeichert)' }).waitFor();
+    await s.page.getByRole('tab', { name: 'Main.java (ungespeichert)' }).waitFor();
     assertNoErrors(assert, s.errors);
   } finally {
     await s.close();
@@ -94,7 +95,7 @@ test('F04-E4 Ctrl+R does not reload the window and throw away unsaved edits', { 
     await s.page.keyboard.press('Control+R');
     await s.page.waitForTimeout(1500);
     assert.match(await editorText(s.page), /\/\/ ungespeichert/);
-    await s.page.getByRole('button', { name: 'Main.java schließen (ungespeichert)' }).waitFor({ timeout: 2000 });
+    await s.page.getByRole('tab', { name: 'Main.java (ungespeichert)' }).waitFor({ timeout: 2000 });
   } finally {
     await s.close();
     fx.cleanup();
@@ -120,6 +121,9 @@ test('F04-E5 closing the window with unsaved changes asks; cancel keeps working,
     await dialog.getByRole('button', { name: /Alle speichern/ }).click();
     await closed;
     assert.match(readFileSync(path.join(fx.dir, MAIN), 'utf8'), /\/\/ vor dem Schließen$/);
+    // BUG-011: no language server of this profile may outlive the app
+    const left = execSync('ps -eo args').toString().split('\n').filter((l) => l.includes('equinox.launcher') && l.includes(s.userData));
+    assert.deepEqual(left, []);
   } finally {
     await s.close();
     fx.cleanup();
@@ -132,7 +136,7 @@ test('F04-E6 keyboard only: Alt+1 focuses the tree, Escape returns to the editor
   try {
     await openMain(s);
     await s.page.keyboard.press('Alt+1'); // hide
-    await s.page.getByRole('tree').waitFor({ state: 'detached' });
+    await s.page.getByRole('tree').waitFor({ state: 'hidden' });
     await s.page.keyboard.press('Alt+1'); // show + focus
     await s.page.getByRole('tree').waitFor();
     await s.page.waitForFunction(() => document.activeElement?.getAttribute('role') === 'tree');

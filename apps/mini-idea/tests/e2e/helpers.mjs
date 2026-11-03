@@ -23,14 +23,14 @@ export function fixture(name = 'hello-java', dirName) {
 }
 
 /**
- * @param {{ pick?: string, userData?: string }} opts
+ * @param {{ pick?: string, userData?: string, env?: Record<string, string> }} opts
  */
-export async function launch({ pick, userData } = {}) {
+export async function launch({ pick, userData, env } = {}) {
   const ud = userData ?? mkdtempSync(path.join(tmpdir(), 'mini-idea-ud-'));
   const app = await _electron.launch({
     executablePath: path.join(appDir, 'node_modules', 'electron', 'dist', process.platform === 'darwin' ? 'Electron.app/Contents/MacOS/Electron' : 'electron'),
     args: [...(process.getuid?.() === 0 ? ['--no-sandbox'] : []), appDir],
-    env: { ...process.env, MINI_IDEA_USER_DATA: ud, ...(pick ? { MINI_IDEA_PICK_FOLDER: pick } : {}) },
+    env: { ...process.env, MINI_IDEA_USER_DATA: ud, ...(pick ? { MINI_IDEA_PICK_FOLDER: pick } : {}), ...env },
   });
   const page = await app.firstWindow();
   const errors = [];

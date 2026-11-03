@@ -3,6 +3,7 @@ import type { Project } from '@shared/ipc';
 import { monaco } from './monaco';
 import { JavaLspClient } from './lsp-client';
 import { ide, useIde } from './store';
+import { adoptSession, clearRun } from './run-events';
 
 // ---------- models (one Monaco model per open file) ----------
 
@@ -11,7 +12,9 @@ interface ModelEntry {
   mtime: number;
   savedVersion: number;
 }
+// Keyed by project id + path, so two projects with the same relative path never share a model.
 const models = new Map<string, ModelEntry>();
+const key = (path: string) => `${useIde.getState().project?.id ?? ''}\u0000${path}`;
 let lsp: JavaLspClient | null = null;
 let revealRequest: { path: string; range: monaco.IRange } | null = null;
 
@@ -30,21 +33,21 @@ export function pathForUri(project: Project, uri: monaco.Uri): string | null {
 }
 
 export async function getModel(path: string): Promise<ModelEntry> {
-  const existing = models.get(path);
+  const existing = models.get(key(path));
   if (existing) return existing;
   const project = useIde.getState().project!;
   const file = await ide.invoke('fs.readFile', { projectId: project.id, path });
   const model = monaco.editor.createModel(file.content, languageFor(path), uriFor(project, path));
   if (file.lineEnding === 'CRLF') model.setEOL(monaco.editor.EndOfLineSequence.CRLF);
   const entry = { model, mtime: file.mtime, savedVersion: model.getAlternativeVersionId() };
-  models.set(path, entry);
+  models.set(key(path), entry);
   model.onDidChangeContent(() => useIde.getState().setDirty(path, model.getAlternativeVersionId() !== entry.savedVersion));
   if (model.getLanguageId() === 'java') lsp?.didOpen(model);
   return entry;
 }
 
 export async function saveFile(path: string): Promise<boolean> {
-  const entry = models.get(path);
+  const entry = models.get(key(path));
   const project = useIde.getState().project;
   if (!entry || !project) return false;
   const res = await ide.invoke('fs.writeFile', { projectId: project.id, path, content: entry.model.getValue(), expectedMtime: entry.mtime });
@@ -62,19 +65,22 @@ export async function saveFile(path: string): Promise<boolean> {
   return true;
 }
 
-export async function saveAll(): Promise<void> {
-  for (const tab of useIde.getState().tabs) if (tab.dirty) await saveFile(tab.path);
+/** Saves every dirty tab. Returns false if any file was not saved (e.g. a declined conflict). */
+export async function saveAll(): Promise<boolean> {
+  let ok = true;
+  for (const tab of useIde.getState().tabs) if (tab.dirty && !(await saveFile(tab.path))) ok = false;
+  return ok;
 }
 
 export function closeFile(path: string): void {
   const tab = useIde.getState().tabs.find((t) => t.path === path);
   if (tab?.dirty && !confirm(`„${path}“ hat ungespeicherte Änderungen. Trotzdem schließen?`)) return;
   useIde.getState().closeTab(path);
-  const entry = models.get(path);
+  const entry = models.get(key(path));
   if (entry) {
     lsp?.didClose(entry.model);
     entry.model.dispose();
-    models.delete(path);
+    models.delete(key(path));
   }
 }
 
@@ -83,7 +89,7 @@ export async function onExternalChange(paths: string[]): Promise<void> {
   const project = useIde.getState().project;
   if (!project) return;
   for (const p of paths) {
-    const entry = models.get(p);
+    const entry = models.get(key(p));
     if (!entry || entry.model.getAlternativeVersionId() !== entry.savedVersion) continue;
     const file = await ide.invoke('fs.readFile', { projectId: project.id, path: p }).catch(() => null);
     if (!file || file.mtime === entry.mtime) continue;
@@ -95,7 +101,10 @@ export async function onExternalChange(paths: string[]): Promise<void> {
 }
 
 export function openFile(path: string, range?: monaco.IRange): void {
-  if (range) revealRequest = { path, range };
+  if (range) {
+    revealRequest = { path, range };
+    useIde.getState().set({ revealNonce: useIde.getState().revealNonce + 1 });
+  }
   useIde.getState().openTab(path);
 }
 
@@ -106,7 +115,47 @@ export function takeRevealRequest(path: string): monaco.IRange | null {
   return r;
 }
 
+// ---------- editor focus ----------
+
+let editorFocus: (() => void) | null = null;
+/** The editor registers how to focus itself; Monaco's input element is an implementation detail. */
+export function registerEditorFocus(fn: (() => void) | null): void {
+  editorFocus = fn;
+}
+export function focusEditor(): void {
+  editorFocus?.();
+}
+
 // ---------- projects ----------
+
+/**
+ * Leaves the current project: asks about unsaved files, then drops every model, marker and
+ * the language server client, so nothing of this project can show up in the next one.
+ * Returns false if the user cancelled.
+ */
+export function closeProject(): boolean {
+  const st = useIde.getState();
+  const dirty = st.tabs.filter((t) => t.dirty);
+  if (dirty.length && !confirm(`${dirty.length === 1 ? `„${dirty[0]!.path}“ hat` : `${dirty.length} Dateien haben`} ungespeicherte Änderungen. Projekt trotzdem schließen?`)) {
+    return false;
+  }
+  persistEditorState();
+  for (const { model } of models.values()) {
+    lsp?.didClose(model);
+    model.dispose();
+  }
+  models.clear();
+  monaco.editor.removeAllMarkers('java');
+  lsp?.dispose();
+  lsp = null;
+  revealRequest = null;
+  st.set({
+    project: null, tabs: [], activePath: null, caret: null, error: null,
+    run: { session: null, output: [] }, lspStatus: 'off', lspMessage: null, diagnosticsCount: { errors: 0, warnings: 0 },
+  });
+  void ide.invoke('project.list', undefined).then((projects) => useIde.getState().set({ projects }));
+  return true;
+}
 
 export async function openProject(dir: string): Promise<void> {
   const st = useIde.getState();
@@ -181,10 +230,11 @@ export async function runFile(path: string | null): Promise<void> {
     return;
   }
   await saveAll();
-  st.set({ run: { session: null, output: [] }, error: null });
+  clearRun();
+  st.set({ error: null });
   st.toggle('run', true);
   const session = await ide.invoke('run.start', { configId: fallback.id });
-  st.set({ run: { ...useIde.getState().run, session } });
+  adoptSession(session);
 }
 
 export async function stopRun(): Promise<void> {
