@@ -32,6 +32,7 @@ export async function launch({ pick, userData, env } = {}) {
     args: [...(process.getuid?.() === 0 ? ['--no-sandbox'] : []), appDir],
     env: { ...process.env, MINI_IDEA_USER_DATA: ud, ...(pick ? { MINI_IDEA_PICK_FOLDER: pick } : {}), ...env },
   });
+  const proc = app.process(); // grab now: after exit Playwright cannot hand it out any more
   const page = await app.firstWindow();
   const errors = [];
   page.on('pageerror', (e) => errors.push(e.message));
@@ -44,14 +45,13 @@ export async function launch({ pick, userData, env } = {}) {
     userData: ud,
     async close() {
       // With unsaved edits the app (correctly) keeps the window open and asks; tests just end it.
-      const proc = app.process();
       await Promise.race([app.close().catch(() => undefined), new Promise((r) => setTimeout(r, 8000))]);
       if (proc.exitCode === null && proc.signalCode === null) {
         await app.evaluate(({ app: a }) => a.exit(0)).catch(() => undefined);
         await new Promise((r) => setTimeout(r, 1000));
         if (proc.exitCode === null && proc.signalCode === null) proc.kill('SIGKILL');
       }
-      if (!userData) rmSync(ud, { recursive: true, force: true });
+      if (!userData) rmSync(ud, { recursive: true, force: true, maxRetries: 5, retryDelay: 300 });
     },
   };
 }
