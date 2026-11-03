@@ -1,0 +1,31 @@
+@import '@fontsource/inter/400.css';
+@import '@fontsource/inter/500.css';
+@import '@fontsource/inter/600.css';
+@import '@fontsource/ibm-plex-mono/400.css';
+@import '../../../../replica/design/tokens.css';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html, body, #root { height: 100%; }
+body {
+  margin: 0;
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+  line-height: var(--leading-sm);
+  overflow: hidden;
+  user-select: none;
+}
+:focus-visible { outline: 2px solid var(--color-focus-ring); outline-offset: 1px; }
+.focus-inset:focus-visible { outline-offset: -2px; }
+input, textarea { user-select: text; }
+
+/* Monaco glyph-margin run icon, drawn with tokens (no external images). */
+.mi-run-glyph { cursor: pointer; }
+.mi-run-glyph::before {
+  content: ''; display: block; margin: 4px 0 0 4px; width: 0; height: 0;
+  border-left: 9px solid var(--color-success); border-top: 6px solid transparent; border-bottom: 6px solid transparent;
+}

@@ -1,27 +1,27 @@
 feature,area,priority,original,clone,notes
-Welcome screen with recent projects,projects,must,yes,no,S01
-Open existing project folder,projects,must,yes,no,F01
-Trust project dialog before running build scripts,projects,must,yes,no,security
-Restore open tabs and layout on reopen,projects,must,yes,no,EditorState
-Project tool window file tree,navigation,must,yes,no,S06 create rename delete move
-Code editor with syntax highlighting,editor,must,yes,no,Monaco or CodeMirror 6 + tree-sitter
-Editor tabs with modified marker and close,editor,must,yes,no,S05
-Undo redo multi-caret and column selection,editor,must,yes,no,
-Code folding and line numbers in gutter,editor,must,yes,no,
-Find and replace in file,editor,must,yes,no,Ctrl+F / Ctrl+R
+Welcome screen with recent projects,projects,must,yes,yes,"S01; S01 filter, keyboard list, remove"
+Open existing project folder,projects,must,yes,yes,F01; F01
+Trust project dialog before running build scripts,projects,must,yes,yes,security; trust / safe mode; LSP and run blocked when untrusted
+Restore open tabs and layout on reopen,projects,must,yes,partial,"EditorState; tabs and active tab restored; caret, scroll and tool window layout not yet"
+Project tool window file tree,navigation,must,yes,partial,"S06 create rename delete move; browse, open, keyboard, live refresh; no create/rename/delete/move yet"
+Code editor with syntax highlighting,editor,must,yes,yes,"Monaco or CodeMirror 6 + tree-sitter; Monaco, token theme"
+Editor tabs with modified marker and close,editor,must,yes,yes,"S05; dirty dot, middle-click close, unsaved-close confirm"
+Undo redo multi-caret and column selection,editor,must,yes,yes,Monaco built-in
+Code folding and line numbers in gutter,editor,must,yes,yes,Monaco built-in
+Find and replace in file,editor,must,yes,yes,Ctrl+F / Ctrl+R; Monaco Ctrl+F / Ctrl+H; IntelliJ-style keymap comes with S36
 Search Everywhere (files classes symbols actions),navigation,must,yes,no,S08 fuzzy matching
 Find in Files with regex scope and mask,search,must,yes,no,S09 ripgrep
 Replace in Files with preview,search,must,yes,no,
-Code completion,code intelligence,must,yes,no,via LSP
-Go to definition and implementation,code intelligence,must,yes,no,via LSP
+Code completion,code intelligence,must,yes,yes,via LSP; Java via JDT LS 1.61
+Go to definition and implementation,code intelligence,must,yes,partial,"via LSP; definition (F12, Ctrl+click, opens tab); no go to implementation"
 Find usages,code intelligence,must,yes,no,S14 via LSP
-Error and warning highlighting,code intelligence,must,yes,no,LSP diagnostics
+Error and warning highlighting,code intelligence,must,yes,yes,"LSP diagnostics; LSP diagnostics, squiggles, status bar counter"
 Problems tool window,code intelligence,must,yes,no,S15
 Quick fixes (Alt+Enter),code intelligence,must,yes,no,LSP code actions
 Rename refactoring across project,refactoring,must,yes,no,LSP rename
 Run configurations editor,run,must,yes,no,S16
-Run from gutter icon,run,must,yes,no,F08
-Run console with clickable stack traces,run,must,yes,no,S17
+Run from gutter icon,run,must,yes,yes,F08; plain Java via javac+java; Gradle/Maven not yet
+Run console with clickable stack traces,run,must,yes,yes,"S17; File.java:line links, stderr in danger, exit code"
 Integrated terminal,tools,must,yes,no,S20 xterm.js + pty
 Line breakpoints and step over/into/out,debug,must,yes,no,via DAP
 Variables and call stack view,debug,must,yes,no,S18
@@ -37,7 +37,7 @@ Inlay hints for parameters and types,editor,should,yes,no,LSP inlay hints
 Code formatting (Reformat Code),editor,should,yes,no,LSP formatting
 Structure tool window,navigation,should,yes,no,S07 LSP document symbols
 Recent files and recent locations,navigation,should,yes,no,Ctrl+E
-Quick documentation popup,code intelligence,should,yes,no,LSP hover
+Quick documentation popup,code intelligence,should,yes,partial,LSP hover; hover docs; no Ctrl+Q popup
 Parameter info,code intelligence,should,yes,no,LSP signature help
 Optimize imports,code intelligence,should,yes,no,
 Extract variable method constant,refactoring,should,yes,no,LSP code actions; quality depends on server
@@ -55,9 +55,9 @@ Gutter change markers and inline blame,vcs,should,yes,no,
 Local history,vcs,should,yes,no,S32
 Maven and Gradle import and tool window,build,should,yes,no,S26 hard part
 Dockable tool windows (left right bottom floating),layout,should,yes,no,
-Light and dark theme,settings,should,yes,no,own palette
+Light and dark theme,settings,should,yes,partial,"own palette; both token sets exist; no switch in UI yet, app runs dark"
 Notifications and background tasks in status bar,layout,should,yes,no,S33 S35
-Status bar widgets (encoding line ending caret),layout,should,yes,no,S35
+Status bar widgets (encoding line ending caret),layout,should,yes,partial,"S35; path, LSP state, problems, caret; encoding static, no widgets clickable"
 Indexing for large projects,performance,should,yes,no,
 Bookmarks with mnemonics,navigation,could,yes,no,S33
 TODO tool window,navigation,could,yes,no,
@@ -81,7 +81,7 @@ Kubernetes integration,tools,could,yes,no,
 Terraform and TypeScript 7 support,code intelligence,could,yes,no,2026.2; via language servers
 Remote debugging (attach to JVM),debug,could,yes,no,
 Thread and frame view for multiple threads,debug,could,yes,no,
-IntelliJ PSI-level Java and Kotlin analysis,code intelligence,could,yes,skip,"20+ years of engine work; replaced by open language servers"
+IntelliJ PSI-level Java and Kotlin analysis,code intelligence,could,yes,skip,20+ years of engine work; replaced by open language servers
 JetBrains Marketplace plugins,plugins,could,yes,skip,their ecosystem and partner network
 JetBrains Account licensing and Toolbox,platform,could,yes,skip,their infrastructure
 Settings sync via JetBrains cloud,settings,could,yes,skip,their infrastructure
