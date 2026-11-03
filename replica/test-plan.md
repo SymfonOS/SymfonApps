@@ -1,6 +1,6 @@
 # Test plan: Mini-IDEA
 
-Build: see the commit of this file  Date: 2026-11-03  Env: local Electron 45.2.1 under Xvfb, Linux,
+Build: specs at `ff6305f`, fixes `21e0dbf`, final run `2b3a644`  Date: 2026-11-03  Env: local Electron 45.2.1 under Xvfb, Linux,
 JDK 21, JDT LS 1.61.0, throwaway copies of `tests/fixtures/hello-java` (and `npm run seed` for manual runs).
 
 Automated = Playwright for Electron (`apps/mini-idea/tests/e2e/`), every spec fails on page/console
@@ -14,43 +14,52 @@ server being slow or gone, "mobile width" = not applicable (minimum window 800×
 
 Result column: **pass**, **fail → BUG-nnn**, **n/b** (flow not built yet), **manual** (in the manual list).
 
+## Summary
+
+Automated: 22 e2e cases (+ 18 unit tests). First run (`ff6305f`): 9 of 18 e2e passed.
+Final run (`2b3a644`): **21 pass, 1 todo (BUG-012), 0 fail**; unit 18 / 18.
+Bugs: 2 × S1, 2 × S2, 5 × S3, 2 × S4 reproduced, 1 withdrawn. Fixed: all except BUG-012 (S2).
+
+Also added: `F01-E2b` (BUG-012, todo) and `F01-N3` (language server that cannot start).
+
 ## Built flows
 
 | case | flow | type | steps | expected | auto | result |
 | --- | --- | --- | --- | --- | --- | --- |
-| F01-H1 | open project | happy | welcome → Ordner öffnen → Vertrauen | tree shows project; welcome, dialog, workspace pass axe | e2e f01 | |
-| F01-E1 | | edge: empty folder | open an empty folder | "Dieser Ordner ist leer." | e2e f01 | |
-| F01-E2 | | edge: spaces, umlauts, emoji in path | open `Mein Projekt ü 🚀`, type an error | error counter shows ≥ 1 | e2e f01 | |
-| F01-E3 | | edge: restart | open 2 files, quit, start again, open from list | both tabs back, last one active, no trust prompt | e2e f01 | |
-| F01-E4 | | edge: switch project ("back button") | A: open Main.java → back → B: open Main.java | editor shows B's file | e2e f01 | |
-| F01-E5 | | edge: untrusted (safe mode) | open → Sicherer Modus → Shift+F10 | run disabled, message shown, no language server | e2e vertical-slice | |
-| F01-E6 | | edge: keyboard only | Tab to list, Enter; dialog default button Enter | opens without mouse | e2e vertical-slice | |
-| F01-N1 | | negative: deleted folder | recent project whose folder was removed | alert "konnte nicht geöffnet werden", no crash | e2e f01 | |
-| F01-N2 | | negative: path escape | renderer asks for `../`, abs path, sibling prefix, symlink out | refused | unit project | |
-| F04-H1 | edit a file | happy | open Main.java, type umlauts + emoji, Ctrl+S | file on disk has the text, dirty marker gone | e2e f04 | |
-| F04-H2 | | happy: keyboard tree | arrows + Enter in tree | file opens | e2e vertical-slice | |
-| F04-E1 | | edge: close dirty tab | type, click × | confirm; cancel keeps tab | e2e f04 | |
-| F04-E2 | | edge: external change, clean file | change file on disk | editor reloads | e2e f04 | |
-| F04-E3 | | edge: external change, dirty file | type, change on disk, Ctrl+S | conflict prompt, cancel keeps disk | e2e f04 + unit | |
-| F04-E4 | | edge: refresh mid-flow | type, Ctrl+R | no reload, edits kept | e2e f04 | |
-| F04-E5 | | edge: quit with unsaved edits | type, close window | in-app prompt: cancel keeps working, save-all saves and quits | e2e f04 | |
-| F04-E6 | | edge: keyboard only | Alt+1 twice, Escape | tree hides/shows and focuses, Escape back to editor | e2e f04 | |
-| F04-E7 | | edge: very long file name | 60-char file name | tab truncates, full name in tooltip | manual | |
-| F04-E8 | | edge: big file | 25 MB file | refused with message, no freeze | manual | |
-| F05-H1 | see and fix an error | happy (display only) | type invalid code | squiggle + counter, gone after fixing | e2e vertical-slice | |
+| F01-H1 | open project | happy | welcome → Ordner öffnen → Vertrauen | tree shows project; welcome, dialog, workspace pass axe | e2e f01 | pass (after BUG-008/009) |
+| F01-E1 | | edge: empty folder | open an empty folder | "Dieser Ordner ist leer." | e2e f01 | pass |
+| F01-E2 | | edge: spaces, umlauts, emoji in path | open `Mein Projekt ü 🚀`, type an error | error counter shows ≥ 1 | e2e f01 | pass (after BUG-003); diagnostics part: fail → BUG-012 |
+| F01-E3 | | edge: restart | open 2 files, quit, start again, open from list | both tabs back, last one active, no trust prompt | e2e f01 | pass |
+| F01-E4 | | edge: switch project ("back button") | A: open Main.java → back → B: open Main.java | editor shows B's file | e2e f01 | fail → BUG-001, pass after fix |
+| F01-E5 | | edge: untrusted (safe mode) | open → Sicherer Modus → Shift+F10 | run disabled, message shown, no language server | e2e vertical-slice | pass |
+| F01-E6 | | edge: keyboard only | Tab to list, Enter; dialog default button Enter | opens without mouse | e2e vertical-slice | pass |
+| F01-N1 | | negative: deleted folder | recent project whose folder was removed | alert "konnte nicht geöffnet werden", no crash | e2e f01 | pass |
+| F01-N3 | | negative: broken language server | JDT LS that exits at once | "Java-Server: Fehler" stays visible after restarts give up | e2e f01 | pass |
+| F01-N2 | | negative: path escape | renderer asks for `../`, abs path, sibling prefix, symlink out | refused | unit project | pass |
+| F04-H1 | edit a file | happy | open Main.java, type umlauts + emoji, Ctrl+S | file on disk has the text, dirty marker gone | e2e f04 | pass |
+| F04-H2 | | happy: keyboard tree | arrows + Enter in tree | file opens | e2e vertical-slice | pass |
+| F04-E1 | | edge: close dirty tab | type, click × | confirm; cancel keeps tab | e2e f04 | pass |
+| F04-E2 | | edge: external change, clean file | change file on disk | editor reloads | e2e f04 | pass |
+| F04-E3 | | edge: external change, dirty file | type, change on disk, Ctrl+S | conflict prompt, cancel keeps disk | e2e f04 + unit | pass |
+| F04-E4 | | edge: refresh mid-flow | type, Ctrl+R | no reload, edits kept | e2e f04 | pass |
+| F04-E5 | | edge: quit with unsaved edits | type, close window | in-app prompt: cancel keeps working, save-all saves and quits | e2e f04 | fail → BUG-002, BUG-011; pass after fix |
+| F04-E6 | | edge: keyboard only | Alt+1 twice, Escape | tree hides/shows and focuses, Escape back to editor | e2e f04 | fail → BUG-007; pass after fix |
+| F04-E7 | | edge: very long file name | 60-char file name | tab truncates, full name in tooltip | manual | manual |
+| F04-E8 | | edge: big file | 25 MB file | refused with message, no freeze | manual | manual |
+| F05-H1 | see and fix an error | happy (display only) | type invalid code | squiggle + counter, gone after fixing | e2e vertical-slice | pass |
 | F05-H2 | | happy: quick fix (Alt+Enter) | | | – | n/b |
-| F07-H1 | go to definition | happy | F12 on `Greeter` | Greeter.java opens, selected | e2e vertical-slice | |
-| F07-E1 | | edge: symbol in JDK | F12 on `String` | nothing breaks (no tab for jar contents yet) | manual | |
+| F07-H1 | go to definition | happy | F12 on `Greeter` | Greeter.java opens, selected | e2e vertical-slice | pass |
+| F07-E1 | | edge: symbol in JDK | F12 on `String` | nothing breaks (no tab for jar contents yet) | manual | manual |
 | F07-H2 | | find usages (Alt+F7) | | | – | n/b |
-| F08-H1 | run | happy | Shift+F10 | output, "Prozess beendet mit Code 0" | e2e vertical-slice | |
-| F08-E1 | | edge: endless program | run `while(true)`, Stop | "Prozess gestoppt.", status gestoppt | e2e f08 | |
-| F08-E2 | | edge: compile error | run code with a type error | "Kompilieren fehlgeschlagen", javac message, non-zero code | e2e f08 | |
-| F08-E3 | | edge: exception | run code that throws | stack trace, link `Main.java:6` jumps to line 6 | e2e f08 | |
-| F08-E4 | | edge: double submit | click Run twice fast | one finished run, no leaked output from the replaced run | e2e f08 | |
-| F08-E5 | | edge: non-ASCII output | print `Grüße aus Köln 🚀 – €` | shown intact | e2e f08 | |
-| F08-E6 | | edge: program reads stdin | `Scanner(System.in).nextLine()` | can type input, or at least Stop works | manual | |
-| F08-N1 | | negative: untrusted | safe mode → Shift+F10 | blocked in main and UI | e2e vertical-slice + unit | |
-| F08-N2 | | negative: no JDK on PATH | run with PATH without java | clear message, no hang | manual | |
+| F08-H1 | run | happy | Shift+F10 | output, "Prozess beendet mit Code 0" | e2e vertical-slice | pass |
+| F08-E1 | | edge: endless program | run `while(true)`, Stop | "Prozess gestoppt.", status gestoppt | e2e f08 | pass (axe: BUG-008/009 fixed) |
+| F08-E2 | | edge: compile error | run code with a type error | "Kompilieren fehlgeschlagen", javac message, non-zero code | e2e f08 | pass |
+| F08-E3 | | edge: exception | run code that throws | stack trace, link `Main.java:6` jumps to line 6 | e2e f08 | fail → BUG-006; pass after fix |
+| F08-E4 | | edge: double submit | click Run twice fast | one finished run, no leaked output from the replaced run | e2e f08 | fail → BUG-005; pass after fix |
+| F08-E5 | | edge: non-ASCII output | print `Grüße aus Köln 🚀 – €` | shown intact | e2e f08 | fail → BUG-004; pass after fix |
+| F08-E6 | | edge: program reads stdin | `Scanner(System.in).nextLine()` | can type input, or at least Stop works | manual | manual |
+| F08-N1 | | negative: untrusted | safe mode → Shift+F10 | blocked in main and UI | e2e vertical-slice + unit | pass |
+| F08-N2 | | negative: no JDK on PATH | run with PATH without java | clear message, no hang | manual | manual |
 
 ## Flows not built yet
 

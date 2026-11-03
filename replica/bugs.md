@@ -1,21 +1,21 @@
 # Bugs: Mini-IDEA
 
-Found by `/replica-test` on 2026-11-03, build `ff6305f`, Electron 45.2.1 under Xvfb (Linux, POSIX locale),
+Found by `/replica-test` on 2026-11-03, build `ff6305f`; fixes in `21e0dbf`, suite green at `2b3a644`, Electron 45.2.1 under Xvfb (Linux, POSIX locale),
 window 1440×900. Every bug below was reproduced; failing test names are the evidence.
 
 | ID | sev | title | status |
 | --- | --- | --- | --- |
-| BUG-001 | S1 | Switching projects shows the previous project's file; saving can overwrite the new project's file | open |
-| BUG-002 | S1 | Closing the window with unsaved edits quits without asking; edits are lost | open |
-| BUG-003 | S2 | Java language server crashes for project paths with non-ASCII characters when the locale is not UTF-8 | open |
-| BUG-004 | S3 | Non-ASCII program output shows as `?` | open |
-| BUG-005 | S3 | Run twice quickly: "Prozess gestoppt." of the replaced run leaks into the new output | open |
-| BUG-006 | S3 | Stack-trace link to the file that is already open does not jump to the line | open |
-| BUG-007 | S3 | Alt+1 shows the project tree but does not focus it; tree loses its expanded folders when hidden | open |
-| BUG-008 | S3 | Interactive elements nested in tabs and list options (screen readers cannot reach close / remove) | open |
-| BUG-009 | S4 | Landmark and heading structure: no `main`, no `h1`, `toolbar` role on `header`/`nav` | open |
+| BUG-001 | S1 | Switching projects shows the previous project's file; saving can overwrite the new project's file | fixed in 21e0dbf |
+| BUG-002 | S1 | Closing the window with unsaved edits quits without asking; edits are lost | fixed in 21e0dbf |
+| BUG-003 | S2 | Java language server crashes for project paths with non-ASCII characters when the locale is not UTF-8 | fixed in 21e0dbf |
+| BUG-004 | S3 | Non-ASCII program output shows as `?` | fixed in 21e0dbf |
+| BUG-005 | S3 | Run twice quickly: "Prozess gestoppt." of the replaced run leaks into the new output | fixed in 21e0dbf |
+| BUG-006 | S3 | Stack-trace link to the file that is already open does not jump to the line | fixed in 21e0dbf |
+| BUG-007 | S3 | Alt+1 shows the project tree but does not focus it; tree loses its expanded folders when hidden | fixed in 21e0dbf |
+| BUG-008 | S3 | Interactive elements nested in tabs and list options (screen readers cannot reach close / remove) | fixed in 21e0dbf |
+| BUG-009 | S4 | Landmark and heading structure: no `main`, no `h1`, `toolbar` role on `header`/`nav` | fixed in 21e0dbf |
 | BUG-010 | – | ~~Status bar shows nothing when the language server keeps crashing~~ | withdrawn: not reproducible |
-| BUG-011 | S4 | Language server keeps running for 10–30 s after the app has quit | open |
+| BUG-011 | S4 | Language server keeps running for 10–30 s after the app has quit | fixed in 21e0dbf |
 | BUG-012 | S2 | In projects with non-ASCII paths, Java diagnostics never arrive for open files | open |
 
 ---
@@ -37,7 +37,7 @@ Expected: B's `Main.java` is shown; saving writes B's content.
 Actual: A's `Main.java` is shown under B's tab. Ctrl+S says the file "wurde außerhalb von Mini-IDEA geändert"; confirming writes A's content into B's file.
 Evidence: test `F01-E4` fails ("editor must show B's Main.java"); manual repro script confirmed B's file contained A's code after confirming.
 Suspected cause: the renderer's model cache (`actions.ts`) is keyed by project-relative path and never cleared when the project changes; the language server client of A also stays attached.
-Status: open
+Status: fixed in 21e0dbf, verified by the full suite at 2b3a644
 
 ### BUG-002: Closing the window with unsaved edits quits without asking; edits are lost
 
@@ -53,7 +53,7 @@ Expected: a prompt: save all / discard / cancel.
 Actual: the app quits at once; the edit is not on disk.
 Evidence: test `F04-E5` fails (no dialog); repro script: "app quit | edit on disk: false".
 Suspected cause: no `close` handling in main, no unsaved-changes check in the renderer.
-Status: open
+Status: fixed in 21e0dbf, verified by the full suite at 2b3a644
 
 ### BUG-003: Java language server crashes for non-ASCII project paths when the locale is not UTF-8
 
@@ -69,7 +69,7 @@ Expected: "Java bereit", diagnostics work.
 Actual: JDT LS exits 4 times (initial + 3 restarts), then stays off.
 Evidence: test `F01-E2` times out waiting for "Java bereit"; JDT LS log: `java.nio.file.InvalidPathException: Malformed input or input contains unmappable characters: …/Mein Projekt �� ����`.
 Suspected cause: the JVM derives `sun.jnu.encoding` from the locale; child processes inherit the app's locale.
-Status: open
+Status: fixed in 21e0dbf, verified by the full suite at 2b3a644
 
 ### BUG-004: Non-ASCII program output shows as `?`
 
@@ -81,7 +81,7 @@ Steps: run a program printing `Grüße aus Köln 🚀 – €`.
 Expected: printed as is. Actual: `Gr??e aus K?ln ? ? ?`.
 Evidence: test `F08-E5`.
 Suspected cause: same as BUG-003 (JVM `stdout.encoding` follows the locale; macOS apps started from Finder usually get no `LANG` either, not tested); javac also reads sources in the platform encoding.
-Status: open
+Status: fixed in 21e0dbf, verified by the full suite at 2b3a644
 
 ### BUG-005: Run twice quickly: output of the replaced run leaks into the new one
 
@@ -93,7 +93,7 @@ Steps: click Run twice in quick succession.
 Expected: one clean output of the new run. Actual: output starts with "Prozess gestoppt." from the replaced run.
 Evidence: test `F08-E4` ("output of the replaced run must not leak in").
 Suspected cause: while a new run is starting the renderer has no session id yet and accepts output from any session.
-Status: open
+Status: fixed in 21e0dbf, verified by the full suite at 2b3a644
 
 ### BUG-006: Stack-trace link to the already open file does not jump to the line
 
@@ -105,7 +105,7 @@ Steps: run code that throws in `Main.java` (open in the active tab), click `Main
 Expected: caret on line 6. Actual: nothing happens.
 Evidence: test `F08-E3` (caret never shows 6:x).
 Suspected cause: the reveal runs only when the active tab changes.
-Status: open
+Status: fixed in 21e0dbf, verified by the full suite at 2b3a644
 
 ### BUG-007: Alt+1 shows the project tree but does not focus it
 
@@ -117,7 +117,7 @@ Steps: in the editor press Alt+1 (hide), Alt+1 (show).
 Expected: tree visible and focused (spec: components.md → ToolWindowStripe). Actual: focus stays in the editor; expanded folders are collapsed again.
 Evidence: test `F04-E6`; probe: focus stays on `div.native-edit-context` after the second Alt+1.
 Suspected cause: hiding unmounts the tree; it reloads asynchronously, so there is nothing to focus yet.
-Status: open
+Status: fixed in 21e0dbf, verified by the full suite at 2b3a644
 
 ### BUG-008: Interactive elements nested inside tabs and list options
 
@@ -127,7 +127,7 @@ Status: open
 
 Expected: no axe violations. Actual: `nested-interactive (serious)`: the close button sits inside `role=tab`, the remove button inside `role=option`.
 Evidence: axe in tests `F08-E1` and `F01-H1`.
-Status: open
+Status: fixed in 21e0dbf, verified by the full suite at 2b3a644
 
 ### BUG-009: Landmark and heading structure
 
@@ -136,7 +136,7 @@ Status: open
 
 Actual (axe): `page-has-heading-one`, `landmark-one-main`, `region`, `aria-allowed-role` (`role=toolbar` on `header` and `nav`).
 Evidence: axe in tests `F01-H1`, `F08-E1`.
-Status: open
+Status: fixed in 21e0dbf, verified by the full suite at 2b3a644
 
 ### BUG-010: Status bar shows nothing when the language server keeps crashing (withdrawn)
 
@@ -158,7 +158,7 @@ Steps: open a trusted project (language server starts), quit the app.
 Expected: the language server ends with the app. Actual: Electron exits with code 0, the JDT LS JVM (up to 1 GB heap) stays 10–30 s.
 Evidence: probe listing `equinox.launcher` processes every 2 s after quit; now asserted at the end of `F04-E5`.
 Suspected cause: `before-quit` started the async shutdown but did not wait for it; the SIGKILL fallback was an `unref`'d timer that never ran.
-Status: open
+Status: fixed in 21e0dbf, verified by the full suite at 2b3a644
 
 ### BUG-012: In projects with non-ASCII paths, Java diagnostics never arrive for open files
 
@@ -176,6 +176,21 @@ What is known: a standalone LSP client that opens the same file with the same pe
 Status: open
 
 ---
+
+## Fix notes
+
+| bug | fix | test that failed first |
+| --- | --- | --- |
+| BUG-001 | model cache keyed by project; `closeProject()` disposes models, markers and the LSP client, asks about unsaved files | F01-E4 |
+| BUG-002 | main intercepts `close`, renderer decides; in-app dialog: save all / discard / cancel | F04-E5 |
+| BUG-003 | JVMs get a UTF-8 locale when the app has none (`java-env.ts`) | F01-E2 (+ unit `javaEnv`) |
+| BUG-004 | same, plus `-Dstdout/stderr.encoding=UTF-8` and `javac -encoding UTF-8` | F08-E5 |
+| BUG-005 | output of unknown sessions is held, only the adopted session is shown | F08-E4 |
+| BUG-006 | reveal counter in the store triggers the jump on the active tab | F08-E3 |
+| BUG-007 | tool windows stay mounted while hidden; editor focus via its own API | F04-E6 |
+| BUG-008 | close / remove buttons moved out of `tab` / `option`, hidden from AT; Ctrl+F4 and Delete for keyboard; unsaved state in the tab name | axe in F01-H1, F08-E1 |
+| BUG-009 | `h1`, `main`, `nav`, `aside`, toolbars on inner elements | axe in F01-H1, F08-E1 |
+| BUG-011 | quit waits for language server shutdown (≤ 3 s), then SIGKILL | assertion added to F04-E5 |
 
 ## To check (not reproduced, not bugs yet)
 
