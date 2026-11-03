@@ -40,7 +40,23 @@ test('F01-E1 empty folder shows an empty state', { timeout: 60_000 }, async () =
   }
 });
 
-test('F01-E2 project path with spaces, umlauts and emoji: Java diagnostics still arrive', { timeout: 240_000 }, async () => {
+test('F01-E2 project path with spaces, umlauts and emoji: the Java server starts (BUG-003)', { timeout: 240_000 }, async () => {
+  const fx = fixture('hello-java', 'Mein Projekt ü 🚀');
+  const s = await launch({ pick: fx.dir });
+  try {
+    await openProject(s.page);
+    await waitForJava(s.page);
+    // stays up (it used to exit and be restarted 3 times)
+    await s.page.waitForTimeout(8000);
+    await s.page.getByRole('status').filter({ hasText: /Java bereit/ }).waitFor({ timeout: 1000 });
+    assertNoErrors(assert, s.errors);
+  } finally {
+    await s.close();
+    fx.cleanup();
+  }
+});
+
+test('F01-E2b project path with umlauts and emoji: diagnostics arrive', { timeout: 240_000, todo: 'BUG-012 open' }, async () => {
   const fx = fixture('hello-java', 'Mein Projekt ü 🚀');
   const s = await launch({ pick: fx.dir });
   try {

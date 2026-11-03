@@ -16,6 +16,7 @@ window 1440×900. Every bug below was reproduced; failing test names are the evi
 | BUG-009 | S4 | Landmark and heading structure: no `main`, no `h1`, `toolbar` role on `header`/`nav` | open |
 | BUG-010 | – | ~~Status bar shows nothing when the language server keeps crashing~~ | withdrawn: not reproducible |
 | BUG-011 | S4 | Language server keeps running for 10–30 s after the app has quit | open |
+| BUG-012 | S2 | In projects with non-ASCII paths, Java diagnostics never arrive for open files | open |
 
 ---
 
@@ -157,6 +158,21 @@ Steps: open a trusted project (language server starts), quit the app.
 Expected: the language server ends with the app. Actual: Electron exits with code 0, the JDT LS JVM (up to 1 GB heap) stays 10–30 s.
 Evidence: probe listing `equinox.launcher` processes every 2 s after quit; now asserted at the end of `F04-E5`.
 Suspected cause: `before-quit` started the async shutdown but did not wait for it; the SIGKILL fallback was an `unref`'d timer that never ran.
+Status: open
+
+### BUG-012: In projects with non-ASCII paths, Java diagnostics never arrive for open files
+
+- Severity: S2 (code intelligence silently missing for such projects; no workaround found yet)
+- Flow / case: F01 / F01-E2b (found after fixing BUG-003)
+- Screen: S05, S35
+
+Steps
+1. Open and trust `Mein Projekt ü 🚀` (UTF-8 locale or the BUG-003 fix in place).
+2. Open `src/com/example/Main.java`, wait for "Java bereit", type an error.
+
+Expected: error squiggle and counter. Actual: "Java bereit", but no diagnostics for the file, ever.
+Evidence: test `F01-E2b` (marked `todo` until fixed); captured `publishDiagnostics` only for the invisible project folder, none for Main.java; JDT LS log: `begin problem for /Main.java` (file treated as a loose file, not as part of the project).
+What is known: a standalone LSP client that opens the same file with the same percent-encoded URI 8 s after `initialized` does get diagnostics (published with the URI in JDT's own form, `ü` unencoded). Suspected: the file is opened while JDT LS is still creating the invisible project, and with this path it is not re-attached afterwards. Not confirmed.
 Status: open
 
 ---

@@ -43,7 +43,14 @@ export async function launch({ pick, userData, env } = {}) {
     errors,
     userData: ud,
     async close() {
-      await app.close().catch(() => undefined);
+      // With unsaved edits the app (correctly) keeps the window open and asks; tests just end it.
+      const proc = app.process();
+      await Promise.race([app.close().catch(() => undefined), new Promise((r) => setTimeout(r, 8000))]);
+      if (proc.exitCode === null && proc.signalCode === null) {
+        await app.evaluate(({ app: a }) => a.exit(0)).catch(() => undefined);
+        await new Promise((r) => setTimeout(r, 1000));
+        if (proc.exitCode === null && proc.signalCode === null) proc.kill('SIGKILL');
+      }
       if (!userData) rmSync(ud, { recursive: true, force: true });
     },
   };
