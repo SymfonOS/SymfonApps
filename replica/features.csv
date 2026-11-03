@@ -1,0 +1,92 @@
+feature,area,priority,original,clone,notes
+Welcome screen with recent projects,projects,must,yes,no,S01
+Open existing project folder,projects,must,yes,no,F01
+Trust project dialog before running build scripts,projects,must,yes,no,security
+Restore open tabs and layout on reopen,projects,must,yes,no,EditorState
+Project tool window file tree,navigation,must,yes,no,S06 create rename delete move
+Code editor with syntax highlighting,editor,must,yes,no,Monaco or CodeMirror 6 + tree-sitter
+Editor tabs with modified marker and close,editor,must,yes,no,S05
+Undo redo multi-caret and column selection,editor,must,yes,no,
+Code folding and line numbers in gutter,editor,must,yes,no,
+Find and replace in file,editor,must,yes,no,Ctrl+F / Ctrl+R
+Search Everywhere (files classes symbols actions),navigation,must,yes,no,S08 fuzzy matching
+Find in Files with regex scope and mask,search,must,yes,no,S09 ripgrep
+Replace in Files with preview,search,must,yes,no,
+Code completion,code intelligence,must,yes,no,via LSP
+Go to definition and implementation,code intelligence,must,yes,no,via LSP
+Find usages,code intelligence,must,yes,no,S14 via LSP
+Error and warning highlighting,code intelligence,must,yes,no,LSP diagnostics
+Problems tool window,code intelligence,must,yes,no,S15
+Quick fixes (Alt+Enter),code intelligence,must,yes,no,LSP code actions
+Rename refactoring across project,refactoring,must,yes,no,LSP rename
+Run configurations editor,run,must,yes,no,S16
+Run from gutter icon,run,must,yes,no,F08
+Run console with clickable stack traces,run,must,yes,no,S17
+Integrated terminal,tools,must,yes,no,S20 xterm.js + pty
+Line breakpoints and step over/into/out,debug,must,yes,no,via DAP
+Variables and call stack view,debug,must,yes,no,S18
+Commit tool window with file selection,vcs,must,yes,no,S21
+Diff viewer side by side,vcs,must,yes,no,S23
+Settings dialog with search,settings,must,yes,no,S29
+Keymap with customizable shortcuts,settings,must,yes,no,S36
+New project wizard with generators,projects,should,yes,no,S02
+Clone from Git URL,projects,should,yes,no,S03
+Split editor horizontally and vertically,editor,should,yes,no,
+Breadcrumbs,editor,should,yes,no,
+Inlay hints for parameters and types,editor,should,yes,no,LSP inlay hints
+Code formatting (Reformat Code),editor,should,yes,no,LSP formatting
+Structure tool window,navigation,should,yes,no,S07 LSP document symbols
+Recent files and recent locations,navigation,should,yes,no,Ctrl+E
+Quick documentation popup,code intelligence,should,yes,no,LSP hover
+Parameter info,code intelligence,should,yes,no,LSP signature help
+Optimize imports,code intelligence,should,yes,no,
+Extract variable method constant,refactoring,should,yes,no,LSP code actions; quality depends on server
+Change signature and move refactorings,refactoring,should,yes,no,hardest refactorings; partly LSP
+Refactoring preview with conflicts,refactoring,should,yes,no,
+Test runner tree with rerun failed,testing,should,yes,no,S19
+Assertion diff for failed tests,testing,should,yes,no,
+Conditional breakpoints and logpoints,debug,should,yes,no,Logpoints new in 2026.2
+Evaluate expression and watches,debug,should,yes,no,
+Git log graph with filters,vcs,should,yes,no,S22
+Branches popup checkout create,vcs,should,yes,no,S25
+Push pull fetch,vcs,should,yes,no,
+Three-way merge conflict resolver,vcs,should,yes,no,S24 incl. resolve all simple conflicts
+Gutter change markers and inline blame,vcs,should,yes,no,
+Local history,vcs,should,yes,no,S32
+Maven and Gradle import and tool window,build,should,yes,no,S26 hard part
+Dockable tool windows (left right bottom floating),layout,should,yes,no,
+Light and dark theme,settings,should,yes,no,own palette
+Notifications and background tasks in status bar,layout,should,yes,no,S33 S35
+Status bar widgets (encoding line ending caret),layout,should,yes,no,S35
+Indexing for large projects,performance,should,yes,no,
+Bookmarks with mnemonics,navigation,could,yes,no,S33
+TODO tool window,navigation,could,yes,no,
+Scratch files,editor,could,yes,no,
+Live templates and postfix completion,editor,could,yes,no,
+Multi-language support beyond JVM,code intelligence,could,yes,no,swap in more language servers
+Shelve and changelists,vcs,could,yes,no,
+GitHub GitLab pull requests,vcs,could,yes,no,official APIs
+Services tool window,run,could,yes,no,S27
+Docker and Docker Compose integration,tools,could,yes,no,
+Database tool window with SQL console,database,could,yes,no,S28 basic version is in free tier
+HTTP client (.http files),tools,could,yes,no,
+Markdown preview,editor,could,yes,no,
+Code coverage,testing,could,yes,no,
+Plugin system with own extension API,plugins,could,yes,no,own API only
+Settings import export,settings,could,yes,no,
+AI chat and completion with own API key,ai,could,yes,no,e.g. Claude API; not JetBrains AI
+Spellchecking in code and comments,code intelligence,could,yes,no,
+Project Structure dialog (modules SDKs libraries),projects,could,yes,no,S31
+Kubernetes integration,tools,could,yes,no,
+Terraform and TypeScript 7 support,code intelligence,could,yes,no,2026.2; via language servers
+Remote debugging (attach to JVM),debug,could,yes,no,
+Thread and frame view for multiple threads,debug,could,yes,no,
+IntelliJ PSI-level Java and Kotlin analysis,code intelligence,could,yes,skip,"20+ years of engine work; replaced by open language servers"
+JetBrains Marketplace plugins,plugins,could,yes,skip,their ecosystem and partner network
+JetBrains Account licensing and Toolbox,platform,could,yes,skip,their infrastructure
+Settings sync via JetBrains cloud,settings,could,yes,skip,their infrastructure
+JetBrains AI Assistant and Junie,ai,could,yes,skip,their models and service; own AI row above instead
+Code With Me and Remote Development,collaboration,could,yes,skip,their infrastructure
+Spring Jakarta EE deep framework support,frameworks,could,yes,skip,Ultimate depth; separate L project each
+Profiler (async-profiler integration UI),tools,could,yes,skip,separate L project
+IntelliJ name logo icons and New UI look 1:1,brand,could,yes,skip,trademarks and assets; own icons and palette
