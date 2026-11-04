@@ -1,4 +1,4 @@
-# Components: Mini-IDEA
+# Components: Hobel
 
 Specs für jede Komponente aus `replica/recon.md` → Components. Token-Namen
 beziehen sich auf `tokens.json` (Farben als Tailwind-Rollen: `bg-surface`,

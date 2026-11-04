@@ -1,0 +1,7 @@
+{
+  "_about": "Rebrand guard for sweep.py, listing.py and replica-deploy. avoid: names that must not appear in the app (matched case-insensitively, also inside identifiers). colors: the original's brand colours (approximate, from memory: verify against JetBrains' brand guidelines) plus Hobel's retired placeholder blues, so none survive. '.idea' is deliberately NOT in avoid: skipping other IDEs' project folders is interoperability, not branding.",
+  "name": "Hobel",
+  "avoid": ["IntelliJ", "JetBrains", "Jet Brains", "Mini IDEA"],
+  "domains": ["jetbrains.com", "jb.gg", "intellij.com"],
+  "colors": ["#3574F0", "#087CFA", "#FE315D", "#F97A12", "#6B57FF", "#3a66d9", "#2f5bd0", "#335bc4", "#284fb8"]
+}
