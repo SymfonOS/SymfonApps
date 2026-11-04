@@ -1,0 +1,17 @@
+{
+  "_about": "Desktop listing for Hobel. Filled for the Mac App Store (same field limits as iOS); Google Play does not apply to a desktop IDE. Note: the Mac App Store requires the App Sandbox, which an IDE that starts javac, java and a language server barely fits; GitHub Releases and Flathub are the realistic channels and reuse the same texts.",
+  "avoid": [
+    "IntelliJ",
+    "JetBrains",
+    "Jet Brains",
+    "Mini IDEA"
+  ],
+  "app_store": {
+    "name": "Hobel: Java-IDE",
+    "subtitle": "Java schreiben und ausführen",
+    "promotional_text": "Projekt öffnen, mit Vervollständigung schreiben, mit einem Klick ausführen. Kein Konto, keine Telemetrie.",
+    "description": "Hobel ist eine kleine Desktop-IDE für Java.\n\nÖffne einen Ordner, schreib mit Vervollständigung, Fehlern beim Tippen und Sprung zur Definition, und starte deine Klasse mit einem Klick. Die Ausgabe läuft live mit, Zeilen im Stacktrace führen direkt in den Code.\n\nErst fragen, dann ausführen: Bevor du einem Ordner vertraust, läuft dort kein Build-Skript und kein Programm. Ohne Vertrauen kannst du trotzdem alles lesen und bearbeiten.\n\nNichts geht still verloren: Beim Schließen mit ungespeicherten Dateien fragt Hobel, und Änderungen auf der Platte werden nicht ungefragt überschrieben.\n\nKein Konto, keine Telemetrie.\n\nHobel ist ein Lernprojekt und kann heute einen Teil dessen, was große IDEs können: Gradle- und Maven-Import, Debugger, Git und die Suche über alle Dateien fehlen noch.\n\nBraucht ein JDK 21 oder neuer.",
+    "keywords": "editor,code,compiler,programmieren,entwickler,jdk,lsp,lernen,kompilieren,quellcode",
+    "whats_new": "Erste Version: Projekt öffnen, Java bearbeiten, ausführen."
+  }
+}

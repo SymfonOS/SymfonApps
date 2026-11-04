@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hobel – Java schreiben und ausführen</title>
+<meta name="description" content="Hobel ist eine kleine Desktop-IDE für Java: Projekt öffnen, mit Vervollständigung schreiben, mit einem Klick ausführen. Kein Konto, keine Telemetrie. Ein Lernprojekt.">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self'">
+<link rel="stylesheet" href="tokens.css">
+<style>
+  /* Copy lives in replica/launch/landing.md. Only token roles from tokens.css are used. */
+  * { box-sizing: border-box; }
+  html { color-scheme: dark light; }
+  body { margin: 0; background: var(--color-bg); color: var(--color-text); font: var(--text-base)/var(--leading-base) var(--font-sans); }
+  a { color: var(--color-link); }
+  a:focus-visible, .btn:focus-visible { outline: 2px solid var(--color-focus-ring); outline-offset: 2px; }
+  .wrap { max-width: 1040px; margin: 0 auto; padding: 0 var(--space-7); }
+  header.top { display: flex; align-items: center; justify-content: space-between; padding: var(--space-6) 0; }
+  .wordmark { font-weight: 600; font-size: var(--text-lg); letter-spacing: .01em; color: var(--color-text); text-decoration: none; }
+  .btn { display: inline-flex; align-items: center; height: var(--size-control-lg); padding: 0 var(--space-6); border-radius: var(--radius-sm); font-weight: 500; text-decoration: none; }
+  .btn-primary { background: var(--color-accent); color: var(--color-on-accent); }
+  .btn-primary:hover { background: var(--color-accent-hover); }
+  .btn-ghost { color: var(--color-text); border: 1px solid var(--color-border); }
+  .btn-ghost:hover { background: var(--color-hover); }
+  .hero { padding: var(--space-9) 0 var(--space-8); }
+  h1 { font-size: calc(var(--text-display) * 1.4); line-height: 1.15; font-weight: 600; margin: 0 0 var(--space-5); max-width: 18ch; }
+  .lede { color: var(--color-text-muted); font-size: var(--text-lg); line-height: var(--leading-lg); max-width: 60ch; margin: 0 0 var(--space-7); }
+  .shot { margin: var(--space-8) 0 0; border: 1px solid var(--color-border); border-radius: var(--radius-lg); overflow: hidden; box-shadow: var(--shadow-dialog); }
+  .shot img { display: block; width: 100%; height: auto; }
+  .shot figcaption { padding: var(--space-4) var(--space-6); font-size: var(--text-xs); color: var(--color-text-muted); background: var(--color-surface); border-top: 1px solid var(--color-border); }
+  section { padding: var(--space-9) 0 0; }
+  h2 { font-size: var(--text-xl); line-height: var(--leading-xl); font-weight: 600; margin: 0 0 var(--space-6); }
+  .muted { color: var(--color-text-muted); }
+  ol.steps { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-6); counter-reset: s; }
+  ol.steps li { background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-md); padding: var(--space-6); counter-increment: s; }
+  ol.steps li::before { content: counter(s); display: grid; place-items: center; width: var(--size-control-md); height: var(--size-control-md); border-radius: var(--radius-pill); background: var(--color-selection); color: var(--color-text); font-weight: 600; margin-bottom: var(--space-4); }
+  ol.steps h3, .features h3 { margin: 0 0 var(--space-2); font-size: var(--text-base); font-weight: 600; }
+  ol.steps p, .features p { margin: 0; color: var(--color-text-muted); }
+  .features { display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--space-6) var(--space-8); }
+  kbd { font-family: var(--font-mono); font-size: var(--text-xs); background: var(--color-surface-raised); border: 1px solid var(--color-border); border-radius: var(--radius-xs); padding: 0 var(--space-2); }
+  .price { display: flex; align-items: baseline; gap: var(--space-5); background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-md); padding: var(--space-7); }
+  .price strong { font-size: var(--text-display); line-height: 1; }
+  dl.faq { margin: 0; display: grid; gap: var(--space-6); }
+  dl.faq dt { font-weight: 600; }
+  dl.faq dd { margin: var(--space-2) 0 0; color: var(--color-text-muted); }
+  .cta { text-align: center; padding: var(--space-9) 0; }
+  footer { border-top: 1px solid var(--color-border); padding: var(--space-6) 0; font-size: var(--text-xs); color: var(--color-text-muted); }
+  @media (max-width: 760px) {
+    .wrap { padding: 0 var(--space-6); }
+    h1 { font-size: var(--text-display); }
+    ol.steps, .features { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <a class="wordmark" href="#">hobel</a>
+    <a class="btn btn-ghost" href="https://github.com/SymfonOS/SymfonApps">Quellcode</a>
+  </header>
+
+  <main>
+    <div class="hero">
+      <h1>Java schreiben und ausführen. Ohne Umweg.</h1>
+      <p class="lede">Eine kleine Desktop-IDE: Projekt öffnen, mit Vervollständigung schreiben, mit einem Klick ausführen. Kein Konto, keine Telemetrie.</p>
+      <a class="btn btn-primary" href="https://github.com/SymfonOS/SymfonApps">Quellcode ansehen</a>
+      <figure class="shot">
+        <img src="hobel-run.png" width="1280" height="873" alt="Hobel mit geöffnetem Java-Projekt: links der Projektbaum, in der Mitte Main.java, unten die Ausgabe eines Laufs mit „Hallo, Welt!“ und „Beendet mit Code 0“.">
+        <figcaption>Echter Screenshot aus dem automatischen Test: Projekt geöffnet, Klasse ausgeführt.</figcaption>
+      </figure>
+    </div>
+
+    <section aria-labelledby="why">
+      <h2 id="why">Warum es Hobel gibt</h2>
+      <p class="muted">Hobel ist ein Lernprojekt. Es baut den Kern einer Java-IDE nach, Schritt für Schritt und offen dokumentiert: wie Editor, Language Server, Prozesse und Dateien zusammenspielen.</p>
+    </section>
+
+    <section aria-labelledby="how">
+      <h2 id="how">So geht's</h2>
+      <ol class="steps">
+        <li><h3>Ordner öffnen</h3><p>Hobel zeigt den Projektbaum und merkt sich das Projekt.</p></li>
+        <li><h3>Vertrauen oder nicht</h3><p>„Ja, vertrauen“ startet Code-Analyse und Ausführen. „Ohne Ausführen“ lässt dich lesen und bearbeiten, ohne dass Code aus dem Ordner läuft.</p></li>
+        <li><h3><kbd>Shift</kbd>+<kbd>F10</kbd></h3><p>Hobel kompiliert und startet die Klasse. Zeilen im Stacktrace sind Links in den Code.</p></li>
+      </ol>
+    </section>
+
+    <section aria-labelledby="features">
+      <h2 id="features">Was Hobel kann</h2>
+      <div class="features">
+        <div><h3>Erst fragen, dann ausführen</h3><p>Kein Build-Skript, kein Language Server, kein Programm läuft, bevor du dem Ordner vertraust.</p></div>
+        <div><h3>Nichts geht still verloren</h3><p>Beim Schließen mit ungespeicherten Dateien fragt Hobel. Hat sich eine Datei auf der Platte geändert, überschreibt Speichern sie nicht ungefragt.</p></div>
+        <div><h3>Ein Klick zum Lauf</h3><p>Das Symbol neben <code>main</code> startet sofort, die Ausgabe läuft live mit, <kbd>Ctrl</kbd>+<kbd>F2</kbd> stoppt.</p></div>
+        <div><h3>Java-Wissen eingebaut</h3><p>Vervollständigung, Fehler beim Tippen, Doku beim Drüberfahren und Sprung zur Definition, über den Eclipse JDT Language Server.</p></div>
+        <div><h3>Bleibt auf deinem Rechner</h3><p>Kein Konto, keine Telemetrie, Hobel selbst ruft keinen Server auf. Einzige Ausnahme: Der mitgelieferte Java-Server fragt beim Start einmal die öffentliche Liste der Gradle-Versionen ab.</p></div>
+        <div><h3>Mit der Tastatur bedienbar</h3><p>Projektbaum, Tabs, Ausführen und Dialoge gehen per Tastatur; die Oberfläche wird automatisch auf Barrierefreiheit geprüft.</p></div>
+      </div>
+    </section>
+
+    <section aria-labelledby="price">
+      <h2 id="price">Was es kostet</h2>
+      <div class="price"><strong>0 €</strong><span class="muted">Hobel ist ein Lernprojekt und wird nicht verkauft.</span></div>
+    </section>
+
+    <section aria-labelledby="faq">
+      <h2 id="faq">Fragen</h2>
+      <dl class="faq">
+        <div><dt>Welche Sprachen?</dt><dd>Java. Andere Sprachen kämen über weitere Language Server, sind aber nicht gebaut.</dd></div>
+        <div><dt>Gradle oder Maven?</dt><dd>Hobel erkennt <code>src/main/java</code>, importiert aber noch keine Build-Dateien. Abhängigkeiten aus Gradle oder Maven fehlen deshalb in der Analyse.</dd></div>
+        <div><dt>Debugger, Git, Suche über alle Dateien?</dt><dd>Noch nicht. Heute kann Hobel 12 von 30 Grundfunktionen vollständig; die Liste steht offen im Repository.</dd></div>
+        <div><dt>Was brauche ich?</dt><dd>Node 22.13 oder neuer und ein JDK 21 oder neuer.</dd></div>
+        <div><dt>Linux, macOS, Windows?</dt><dd>Getestet ist Linux. macOS und Windows sollten laufen, sind aber nicht geprüft.</dd></div>
+        <div><dt>Ersetzt Hobel meine IDE?</dt><dd>Nein, heute nicht. Es ist zum Lernen und Ausprobieren da.</dd></div>
+        <div><dt>Lizenz?</dt><dd>Noch offen.</dd></div>
+      </dl>
+    </section>
+
+    <section class="cta" aria-labelledby="cta">
+      <h2 id="cta">Hobel ist klein und offen gebaut.</h2>
+      <p class="muted">Schau rein, probier es aus.</p>
+      <a class="btn btn-primary" href="https://github.com/SymfonOS/SymfonApps">Quellcode ansehen</a>
+    </section>
+  </main>
+
+  <footer>Hobel · Ein Lernprojekt in SymfonApps · Eclipse JDT Language Server unter EPL-2.0</footer>
+</div>
+</body>
+</html>

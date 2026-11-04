@@ -1,4 +1,4 @@
-import { app, BrowserWindow, dialog, ipcMain, shell } from 'electron';
+import { app, BrowserWindow, dialog, ipcMain, session, shell } from 'electron';
 import path from 'node:path';
 import { mkdirSync } from 'node:fs';
 import { schemas } from './schemas';
@@ -30,6 +30,10 @@ function handle<C extends InvokeChannel>(channel: C, fn: (input: InvokeMap[C]['i
 
 async function main(): Promise<void> {
   await app.whenReady();
+  // Chromium's spellchecker fetches dictionaries from Google servers (redirector.gvt1.com) at
+  // startup, per session, even with spellcheck off in the window. Hobel makes no calls of its own.
+  session.defaultSession.setSpellCheckerEnabled(false);
+  session.defaultSession.setSpellCheckerLanguages([]);
   const userData = app.getPath('userData');
   mkdirSync(userData, { recursive: true });
   const db = openDb(path.join(userData, 'state.db'));
@@ -96,6 +100,7 @@ async function main(): Promise<void> {
       contextIsolation: true,
       nodeIntegration: false,
       sandbox: true,
+      spellcheck: false,
     },
   });
   win.once('ready-to-show', () => win?.show());

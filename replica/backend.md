@@ -44,7 +44,12 @@ confirmed the symlink test is real.
 | npm registry | install | dependencies only |
 | Electron binaries | install | via the `electron` package's installer |
 
-The running app makes no network calls of its own.
+The running app makes no network calls of its own. Checked 2026-11-04 with a recording proxy
+(e2e test `NET-1`): the only request while opening and trusting a project is
+`services.gradle.org`, made by Buildship inside the Eclipse JDT Language Server (public Gradle
+version list, no project data). Two calls were found and removed on the way: Chromium's
+spellchecker dictionary download (`redirector.gvt1.com`, now off per session);
+Gradle/Maven import is switched off in JDT LS until Hobel supports it (S26).
 
 ## Security checklist
 

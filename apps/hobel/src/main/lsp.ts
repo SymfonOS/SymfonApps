@@ -158,7 +158,15 @@ export class LspHost {
           window: { workDoneProgress: true },
         },
         initializationOptions: {
-          settings: { java: { autobuild: { enabled: true }, project: { sourcePaths: detectSourcePaths(rootPath) } } },
+          settings: {
+            java: {
+              autobuild: { enabled: true },
+              project: { sourcePaths: detectSourcePaths(rootPath) },
+              // Hobel does not import Gradle/Maven builds yet (S26). With import on, JDT LS
+              // contacts services.gradle.org / Maven Central in the background.
+              import: { gradle: { enabled: false }, maven: { enabled: false } },
+            },
+          },
         },
       });
       await conn.sendNotification('initialized', {});

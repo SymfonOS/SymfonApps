@@ -24,13 +24,13 @@ export function fixture(name = 'hello-java', dirName) {
 }
 
 /**
- * @param {{ pick?: string, userData?: string, env?: Record<string, string> }} opts
+ * @param {{ pick?: string, userData?: string, env?: Record<string, string>, args?: string[] }} opts
  */
-export async function launch({ pick, userData, env } = {}) {
+export async function launch({ pick, userData, env, args = [] } = {}) {
   const ud = userData ?? mkdtempSync(path.join(tmpdir(), 'hobel-ud-'));
   const app = await _electron.launch({
     executablePath: path.join(appDir, 'node_modules', 'electron', 'dist', process.platform === 'darwin' ? 'Electron.app/Contents/MacOS/Electron' : 'electron'),
-    args: [...(process.getuid?.() === 0 ? ['--no-sandbox'] : []), appDir],
+    args: [...(process.getuid?.() === 0 ? ['--no-sandbox'] : []), ...args, appDir],
     env: { ...process.env, HOBEL_USER_DATA: ud, ...(pick ? { HOBEL_PICK_FOLDER: pick } : {}), ...env },
   });
   const proc = app.process(); // grab now: after exit Playwright cannot hand it out any more
