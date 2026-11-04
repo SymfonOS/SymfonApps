@@ -39,7 +39,8 @@ async function main(): Promise<void> {
   const db = openDb(path.join(userData, 'state.db'));
 
   const projects = new ProjectService(db, (projectId, paths) => emit('fs.changed', { projectId, paths }));
-  const jdtlsHome = process.env.HOBEL_JDTLS ?? path.join(app.getAppPath(), '.jdtls', 'server');
+  // Packaged: the language server ships next to app.asar (a JVM cannot run from inside the archive).
+  const jdtlsHome = process.env.HOBEL_JDTLS ?? (app.isPackaged ? path.join(process.resourcesPath, 'jdtls') : path.join(app.getAppPath(), '.jdtls', 'server'));
   const lsp = new LspHost(jdtlsHome, userData, {
     notification: (sessionId, method, params) => emit('lsp.notification', { sessionId, method, params }),
     status: (sessionId, status, message) => emit('lsp.status', { sessionId, status, message }),
