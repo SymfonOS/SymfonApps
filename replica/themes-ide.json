@@ -1,0 +1,376 @@
+{
+ "_about": "Themes for a desktop IDE (Mini-IDEA vs IntelliJ IDEA). Base themes from replica-entrepreneur, plus IDE words. Patterns are case-insensitive Python regexes. Use: python3 reviews.py replica/reviews.csv --themes replica/themes-ide.json --out replica/feedback.md",
+ "request_patterns": [
+  "\\bi wish\\b",
+  "\\bplease add\\b",
+  "\\bwould be (nice|great|good|helpful)\\b",
+  "\\bwould love\\b",
+  "\\bneeds? (a|an|the|to|more)\\b",
+  "\\bno way to\\b",
+  "\\bthere'?s no (way|option)\\b",
+  "\\b(can'?t|cannot|unable to) (even )?(add|change|edit|set|choose|export|import|customi[sz]e|connect|undo|delete|turn off)\\b",
+  "\\b(missing|lacks|lacking)\\b",
+  "\\bdoesn'?t (have|support|let|allow)\\b",
+  "\\bif only\\b",
+  "\\bfeature request\\b",
+  "\\bwhy (can'?t|isn'?t|doesn'?t)\\b"
+ ],
+ "themes": [
+  {
+   "id": "pricing",
+   "label": "Price and paywalls",
+   "kind": "complaint",
+   "patterns": [
+    "\\bexpensive\\b",
+    "\\boverpriced\\b",
+    "\\bpric(e|es|ey|ing)\\b",
+    "\\bpaywall",
+    "\\bsubscription\\b",
+    "\\bper (month|seat|user)\\b",
+    "\\bfree (plan|tier|version)\\b",
+    "\\bupgrade to\\b",
+    "\\bpremium\\b",
+    "\\bnot worth\\b",
+    "\\bcost(s|ly)?\\b"
+   ]
+  },
+  {
+   "id": "billing",
+   "label": "Billing, cancelling and refunds",
+   "kind": "complaint",
+   "patterns": [
+    "\\bcharged\\b",
+    "\\brefund",
+    "\\bcancel(l?ing|l?ed|lation)?\\b",
+    "\\bauto.?renew",
+    "\\bhidden (fee|charge)",
+    "\\bbilling\\b",
+    "\\bscam\\b",
+    "\\bcredit card\\b"
+   ]
+  },
+  {
+   "id": "bugs",
+   "label": "Bugs and crashes",
+   "kind": "complaint",
+   "patterns": [
+    "\\bcrash(es|ed|ing)?\\b",
+    "\\bbugs?\\b",
+    "\\bbuggy\\b",
+    "\\bglitch",
+    "\\bfreez(e|es|ing)\\b",
+    "\\bbroken\\b",
+    "\\b(doesn'?t|does not|stopped) work",
+    "\\bnot working\\b",
+    "\\berror\\b"
+   ]
+  },
+  {
+   "id": "performance",
+   "label": "Slow, laggy, heavy",
+   "kind": "complaint",
+   "patterns": [
+    "\\bslow\\b",
+    "\\blag(gy|s)?\\b",
+    "\\bloading\\b",
+    "\\btakes forever\\b",
+    "\\bbattery\\b",
+    "\\bsluggish\\b",
+    "\\bheavy\\b"
+   ]
+  },
+  {
+   "id": "data",
+   "label": "Sync and lost data",
+   "kind": "complaint",
+   "patterns": [
+    "\\bsync(ing|s|ed)?\\b",
+    "\\blost (my|all)\\b",
+    "\\bdisappear",
+    "\\bdata loss\\b",
+    "\\bwiped\\b",
+    "\\bbackup\\b",
+    "\\bduplicat"
+   ]
+  },
+  {
+   "id": "ux",
+   "label": "Confusing or clunky to use",
+   "kind": "complaint",
+   "patterns": [
+    "\\bconfus",
+    "\\bhard to (use|find|navigate|understand)\\b",
+    "\\bcomplicated\\b",
+    "\\bcluttered\\b",
+    "\\bunintuitive\\b",
+    "\\bnot intuitive\\b",
+    "\\bclunky\\b",
+    "\\btoo many (steps|clicks|taps)\\b",
+    "\\blearning curve\\b",
+    "\\bcan'?t find\\b"
+   ]
+  },
+  {
+   "id": "support",
+   "label": "Support that does not answer",
+   "kind": "complaint",
+   "patterns": [
+    "\\bcustomer (service|support)\\b",
+    "\\bsupport (team|is|was)\\b",
+    "\\bno (response|reply)\\b",
+    "\\bnever (replied|responded|heard back)\\b",
+    "\\bticket\\b",
+    "\\bchat ?bot\\b"
+   ]
+  },
+  {
+   "id": "account",
+   "label": "Login and account problems",
+   "kind": "complaint",
+   "patterns": [
+    "\\blog ?in\\b",
+    "\\bsign ?in\\b",
+    "\\bpassword\\b",
+    "\\blocked out\\b",
+    "\\bverification\\b",
+    "\\b2fa\\b",
+    "\\bdelete (my )?account\\b"
+   ]
+  },
+  {
+   "id": "notifications",
+   "label": "Notifications and spam",
+   "kind": "complaint",
+   "patterns": [
+    "\\bnotification",
+    "\\bspam",
+    "\\btoo many emails\\b",
+    "\\bpush\\b",
+    "\\breminders?\\b"
+   ]
+  },
+  {
+   "id": "ads",
+   "label": "Ads",
+   "kind": "complaint",
+   "patterns": [
+    "\\bads\\b",
+    "\\badvert",
+    "\\bad.?supported\\b",
+    "\\bpop.?ups?\\b"
+   ]
+  },
+  {
+   "id": "updates",
+   "label": "A redesign or update made it worse",
+   "kind": "complaint",
+   "patterns": [
+    "\\b(new|latest|recent) (update|version|design)\\b",
+    "\\bredesign",
+    "\\bused to be\\b",
+    "\\bbring back\\b",
+    "\\bsince the update\\b"
+   ]
+  },
+  {
+   "id": "privacy",
+   "label": "Privacy and permissions",
+   "kind": "complaint",
+   "patterns": [
+    "\\bprivacy\\b",
+    "\\btracking\\b",
+    "\\bsell(s|ing)? (my )?data\\b",
+    "\\bpermissions?\\b",
+    "\\bcreepy\\b"
+   ]
+  },
+  {
+   "id": "integrations",
+   "label": "Integrations, import and export",
+   "kind": "request",
+   "patterns": [
+    "\\bintegrat",
+    "\\bzapier\\b",
+    "\\bgoogle (calendar|sheets|drive)\\b",
+    "\\boutlook\\b",
+    "\\bslack\\b",
+    "\\bapi\\b",
+    "\\bexport\\b",
+    "\\bimport\\b",
+    "\\bcsv\\b",
+    "\\bwebhook"
+   ]
+  },
+  {
+   "id": "platforms",
+   "label": "Platforms, offline and mobile",
+   "kind": "request",
+   "patterns": [
+    "\\boffline\\b",
+    "\\bandroid\\b",
+    "\\bipad\\b",
+    "\\btablet\\b",
+    "\\bdesktop app\\b",
+    "\\bmac app\\b",
+    "\\bwindows\\b",
+    "\\bmobile (app|version)\\b",
+    "\\bweb version\\b"
+   ]
+  },
+  {
+   "id": "customisation",
+   "label": "Customisation and control",
+   "kind": "request",
+   "patterns": [
+    "\\bcustomi[sz]",
+    "\\bdark mode\\b",
+    "\\btheme\\b",
+    "\\bbranding\\b",
+    "\\bwhite.?label\\b",
+    "\\btemplates?\\b",
+    "\\bsettings?\\b",
+    "\\boption to\\b"
+   ]
+  },
+  {
+   "id": "collaboration",
+   "label": "Teams and sharing",
+   "kind": "request",
+   "patterns": [
+    "\\bteam(s|mates?)?\\b",
+    "\\bshar(e|ing)\\b",
+    "\\bcollaborat",
+    "\\bmultiple (users|accounts|people)\\b",
+    "\\broles?\\b",
+    "\\bpermissions for\\b"
+   ]
+  },
+  {
+   "id": "memory",
+   "label": "Memory and CPU use",
+   "kind": "complaint",
+   "patterns": [
+    "\\bmemory\\b",
+    "\\bram\\b",
+    "\\b\\d+\\s?gb\\b",
+    "\\bheap\\b",
+    "\\bresource.?hungry\\b",
+    "\\bcpu\\b",
+    "\\bfans?\\b",
+    "\\bbattery\\b",
+    "\\bbloat(ed)?\\b",
+    "\\bheavy\\b"
+   ]
+  },
+  {
+   "id": "indexing",
+   "label": "Indexing and dumb mode",
+   "kind": "complaint",
+   "patterns": [
+    "\\bindex(ing|es)?\\b",
+    "\\bdumb mode\\b",
+    "\\binvalidate caches\\b",
+    "\\bscanning files\\b",
+    "\\bupdating indices\\b"
+   ]
+  },
+  {
+   "id": "startup",
+   "label": "Startup and project open time",
+   "kind": "complaint",
+   "patterns": [
+    "\\bstart.?up\\b",
+    "\\btakes (forever|ages|minutes)\\b",
+    "\\bopen(ing)? (a )?project\\b",
+    "\\blaunch(es|ing)? (slow|takes)\\b"
+   ]
+  },
+  {
+   "id": "freezes",
+   "label": "Freezes, hangs and crashes",
+   "kind": "complaint",
+   "patterns": [
+    "\\bfreez(e|es|ing)\\b",
+    "\\bfroze\\b",
+    "\\bhang(s|ing)?\\b",
+    "\\bunresponsive\\b",
+    "\\bcrash(es|ed|ing)?\\b",
+    "\\bbeach ?ball\\b",
+    "\\bnot responding\\b"
+   ]
+  },
+  {
+   "id": "build_sync",
+   "label": "Gradle/Maven sync and import problems",
+   "kind": "complaint",
+   "patterns": [
+    "\\bgradle\\b",
+    "\\bmaven\\b",
+    "\\bsync(ing)?\\b",
+    "\\bimport(ing)? (the )?project\\b",
+    "\\bre-?import\\b"
+   ]
+  },
+  {
+   "id": "new_ui",
+   "label": "UI changes (new UI) and clutter",
+   "kind": "complaint",
+   "patterns": [
+    "\\bnew ui\\b",
+    "\\bold ui\\b",
+    "\\bcluttered?\\b",
+    "\\bui (change|redesign)\\b",
+    "\\bhidden (menu|toolbar)\\b",
+    "\\bmain menu\\b"
+   ]
+  },
+  {
+   "id": "ai_push",
+   "label": "AI features pushed or in the way",
+   "kind": "complaint",
+   "patterns": [
+    "\\bai assistant\\b",
+    "\\bjunie\\b",
+    "\\bai (plugin|features?|completion)\\b",
+    "\\bcopilot\\b",
+    "\\bfull line completion\\b"
+   ]
+  },
+  {
+   "id": "licensing",
+   "label": "Licensing, account and editions",
+   "kind": "complaint",
+   "patterns": [
+    "\\blicen[cs]e\\b",
+    "\\bjetbrains account\\b",
+    "\\bcommunity edition\\b",
+    "\\bultimate\\b",
+    "\\btoolbox\\b",
+    "\\bperpetual\\b",
+    "\\bfallback license\\b"
+   ]
+  },
+  {
+   "id": "plugins",
+   "label": "Plugin breakage and compatibility",
+   "kind": "complaint",
+   "patterns": [
+    "\\bplugins?\\b.*\\b(broke|incompatible|outdated|crash)",
+    "\\bincompatible\\b",
+    "\\bmarketplace\\b"
+   ]
+  },
+  {
+   "id": "learning_curve",
+   "label": "Complex, too many settings, learning curve",
+   "kind": "complaint",
+   "patterns": [
+    "\\blearning curve\\b",
+    "\\boverwhelm(ing|ed)\\b",
+    "\\btoo many (settings|options|features)\\b",
+    "\\bcomplex(ity)?\\b",
+    "\\bconfusing\\b"
+   ]
+  }
+ ]
+}
