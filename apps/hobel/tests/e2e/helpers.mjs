@@ -1,5 +1,6 @@
 // Shared e2e helpers: launch the real Electron app against throwaway copies of fixtures,
 // fail on page errors, and run an axe accessibility scan on the current screen.
+import { execSync } from 'node:child_process';
 import { cpSync, mkdtempSync, mkdirSync, readFileSync, rmSync } from 'node:fs';
 import { createRequire } from 'node:module';
 import { tmpdir } from 'node:os';
@@ -50,6 +51,14 @@ export async function launch({ pick, userData, env } = {}) {
         await app.evaluate(({ app: a }) => a.exit(0)).catch(() => undefined);
         await new Promise((r) => setTimeout(r, 1000));
         if (proc.exitCode === null && proc.signalCode === null) proc.kill('SIGKILL');
+        // A force-killed app cannot shut its language server down; end the ones of this profile.
+        try {
+          for (const line of execSync('ps -eo pid=,args=').toString().split('\n')) {
+            if (line.includes('equinox.launcher') && line.includes(ud)) process.kill(Number(line.trim().split(/\s+/)[0]), 'SIGKILL');
+          }
+        } catch {
+          /* already gone */
+        }
       }
       if (!userData) rmSync(ud, { recursive: true, force: true, maxRetries: 5, retryDelay: 300 });
     },

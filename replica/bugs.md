@@ -172,6 +172,7 @@ Steps
 
 Expected: error squiggle and counter. Actual: "Java bereit", but no diagnostics for the file, ever.
 Evidence: test `F01-E2b` (marked `todo` until fixed); captured `publishDiagnostics` only for the invisible project folder, none for Main.java; JDT LS log: `begin problem for /Main.java` (file treated as a loose file, not as part of the project).
+Intermittent: in the full run after the rebrand (2026-11-04, `d7c71c2`) `F01-E2b` passed once; in every earlier run it failed. That fits the timing suspicion below.
 What is known: a standalone LSP client that opens the same file with the same percent-encoded URI 8 s after `initialized` does get diagnostics (published with the URI in JDT's own form, `ü` unencoded). Suspected: the file is opened while JDT LS is still creating the invisible project, and with this path it is not re-attached afterwards. Not confirmed.
 Status: open
 
